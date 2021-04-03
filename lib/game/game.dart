@@ -6,6 +6,8 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:spacescape/game/enemy_manager.dart';
+import 'package:spacescape/game/knows_game_size.dart';
 import 'package:spacescape/game/player.dart';
 
 // This class is responsible for initializing and running the game-loop.
@@ -21,6 +23,7 @@ class SpacescapeGame extends BaseGame with PanDetector {
   // Controls how big the joystick zone is.
   final double _joystickRadius = 60;
 
+  // Controls how big the joystick head is.
   final double _joystickThumbRadius = 20;
 
   // Controls how big the deadzone is.
@@ -30,6 +33,7 @@ class SpacescapeGame extends BaseGame with PanDetector {
   // Assets loading and adding component should be done here.
   @override
   Future<void> onLoad() async {
+    // Loads and caches the image for later use.
     await images.load('simpleSpace_tilesheet@2.png');
 
     final spriteSheet = SpriteSheet.fromColumnsAndRows(
@@ -46,8 +50,10 @@ class SpacescapeGame extends BaseGame with PanDetector {
 
     // Makes sure that the sprite is centered.
     player.anchor = Anchor.center;
-
     add(player);
+
+    EnemyManager enemyManager = EnemyManager(spriteSheet: spriteSheet);
+    add(enemyManager);
   }
 
   // Render method comes from Flame's Game class and gets called for every iteration of game loop.
@@ -122,5 +128,26 @@ class SpacescapeGame extends BaseGame with PanDetector {
     _pointerStartPosition = null;
     _pointerCurrentPosition = null;
     player.setMoveDirection(Vector2.zero());
+  }
+
+  @override
+  void prepare(Component c) {
+    super.prepare(c);
+
+    // If the component being prepared is of type KnowsGameSize,
+    // call onResize() on it so that it stores the current game screen size.
+    if (c is KnowsGameSize) {
+      c.onResize(this.size);
+    }
+  }
+
+  @override
+  void onResize(Vector2 canvasSize) {
+    super.onResize(canvasSize);
+
+    // Loop over all the components of type KnowsGameSize and resize then as well.
+    this.components.whereType<KnowsGameSize>().forEach((component) {
+      component.onResize(this.size);
+    });
   }
 }
