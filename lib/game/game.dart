@@ -6,14 +6,22 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:spacescape/game/bullet.dart';
+import 'package:spacescape/game/enemy.dart';
 import 'package:spacescape/game/enemy_manager.dart';
 import 'package:spacescape/game/knows_game_size.dart';
 import 'package:spacescape/game/player.dart';
 
 // This class is responsible for initializing and running the game-loop.
-class SpacescapeGame extends BaseGame with PanDetector {
+class SpacescapeGame extends BaseGame with PanDetector, TapDetector {
   // Stores a reference to player component.
   late Player player;
+
+  // Stores a reference to the main spritesheet.
+  late SpriteSheet _spriteSheet;
+
+  // Stores a reference to an enemy manager component.
+  late EnemyManager _enemyManager;
 
   // These represent the start and updated pointer position.
   // Null values represent that user is not touching the screen at the moment.
@@ -36,14 +44,14 @@ class SpacescapeGame extends BaseGame with PanDetector {
     // Loads and caches the image for later use.
     await images.load('simpleSpace_tilesheet@2.png');
 
-    final spriteSheet = SpriteSheet.fromColumnsAndRows(
+    _spriteSheet = SpriteSheet.fromColumnsAndRows(
       image: images.fromCache('simpleSpace_tilesheet@2.png'),
       columns: 8,
       rows: 6,
     );
 
     player = Player(
-      sprite: spriteSheet.getSpriteById(6),
+      sprite: _spriteSheet.getSpriteById(6),
       size: Vector2(64, 64),
       position: viewport.canvasSize / 2,
     );
@@ -52,8 +60,8 @@ class SpacescapeGame extends BaseGame with PanDetector {
     player.anchor = Anchor.center;
     add(player);
 
-    EnemyManager enemyManager = EnemyManager(spriteSheet: spriteSheet);
-    add(enemyManager);
+    _enemyManager = EnemyManager(spriteSheet: _spriteSheet);
+    add(_enemyManager);
   }
 
   // Render method comes from Flame's Game class and gets called for every iteration of game loop.
@@ -95,6 +103,44 @@ class SpacescapeGame extends BaseGame with PanDetector {
   }
 
   @override
+  void update(double dt) {
+    super.update(dt);
+
+    // Get a list of all the bullets in game world.
+    final bullets = this.components.whereType<Bullet>();
+
+    // Loop over all the enemies added under _enemyManager.
+    for (final enemy in _enemyManager.children.whereType<Enemy>()) {
+      // If current enemy is already marked to be removed, skip it.
+      if (enemy.shouldRemove) {
+        continue;
+      }
+
+      // Loop over all the bullets.
+      for (final bullet in bullets) {
+        // If current bullet is already marked to be removed, skip it.
+        if (bullet.shouldRemove) {
+          continue;
+        }
+
+        // If center of current bullet is completely inside
+        // sprite rectangle of current enemy, it means they have collided.
+        // In such case, mark both of them to be removed.
+        if (enemy.containsPoint(bullet.absoluteCenter)) {
+          enemy.remove();
+          bullet.remove();
+          break;
+        }
+      }
+
+      // Player-enemy collision.
+      if (player.containsPoint(enemy.absoluteCenter)) {
+        print("Enemy hit player!!!");
+      }
+    }
+  }
+
+  @override
   void onPanStart(DragStartDetails details) {
     // Initially, both small and big circles will be placed at the same location.
     _pointerStartPosition = details.globalPosition;
@@ -128,6 +174,23 @@ class SpacescapeGame extends BaseGame with PanDetector {
     _pointerStartPosition = null;
     _pointerCurrentPosition = null;
     player.setMoveDirection(Vector2.zero());
+  }
+
+  @override
+  void onTapDown(TapDownDetails details) {
+    super.onTapDown(details);
+
+    // When players tap the screen, spawn a new bullet
+    // at player's spaceship's current position.
+    Bullet bullet = Bullet(
+      sprite: _spriteSheet.getSpriteById(28),
+      size: Vector2(64, 64),
+      position: this.player.position,
+    );
+
+    // Anchor it to center and add to game world.
+    bullet.anchor = Anchor.center;
+    add(bullet);
   }
 
   @override
