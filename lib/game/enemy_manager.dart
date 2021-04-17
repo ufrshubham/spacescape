@@ -2,9 +2,10 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:spacescape/game/enemy.dart';
-import 'package:spacescape/game/game.dart';
-import 'package:spacescape/game/knows_game_size.dart';
+
+import 'enemy.dart';
+import 'game.dart';
+import 'knows_game_size.dart';
 
 // This component class takes care of spawning new enemy components
 // randomly from top of the screen. It uses the HasGameRef mixin so that
@@ -47,7 +48,10 @@ class EnemyManager extends BaseComponent
 
     // Makes sure that the enemy sprite is centered.
     enemy.anchor = Anchor.center;
-    addChild(enemy);
+
+    // Add it to components list of game instance, instead of EnemyManager.
+    // This ensures the collision detection working correctly.
+    gameRef.add(enemy);
   }
 
   @override

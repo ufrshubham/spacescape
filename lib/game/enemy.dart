@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:spacescape/game/knows_game_size.dart';
+import 'package:flame/geometry.dart';
+
+import 'bullet.dart';
+import 'knows_game_size.dart';
 
 // This class represent an enemy component.
-class Enemy extends SpriteComponent with KnowsGameSize {
+class Enemy extends SpriteComponent with KnowsGameSize, Hitbox, Collidable {
   // The speed of this enemy.
   double _speed = 250;
 
@@ -17,6 +20,26 @@ class Enemy extends SpriteComponent with KnowsGameSize {
     // all the sprites initially face the same direct, but we want enemies to be
     // moving in opposite direction.
     angle = pi;
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+
+    // Adding a circular hitbox with radius as 0.8 times
+    // the smallest dimension of this components size.
+    final shape = HitboxCircle(definition: 0.8);
+    addShape(shape);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
+    super.onCollision(intersectionPoints, other);
+
+    // If the other Collidable is a Bullet, remove this Enemy.
+    if (other is Bullet) {
+      this.remove();
+    }
   }
 
   @override

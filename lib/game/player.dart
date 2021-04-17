@@ -1,8 +1,19 @@
 import 'package:flame/components.dart';
-import 'package:spacescape/game/knows_game_size.dart';
+import 'package:flame/geometry.dart';
+
+import 'knows_game_size.dart';
+import 'bullet.dart';
+import 'enemy.dart';
+import 'game.dart';
 
 // This component class represents the player character in game.
-class Player extends SpriteComponent with KnowsGameSize {
+class Player extends SpriteComponent
+    with
+        KnowsGameSize,
+        Hitbox,
+        Collidable,
+        JoystickListener,
+        HasGameRef<SpacescapeGame> {
   // Controls in which direction player should move. Magnitude of this vector does not matter.
   // It is just used for getting a direction.
   Vector2 _moveDirection = Vector2.zero();
@@ -15,6 +26,25 @@ class Player extends SpriteComponent with KnowsGameSize {
     Vector2? position,
     Vector2? size,
   }) : super(sprite: sprite, position: position, size: size);
+
+  @override
+  void onMount() {
+    super.onMount();
+
+    // Adding a circular hitbox with radius as 0.8 times
+    // the smallest dimension of this components size.
+    final shape = HitboxCircle(definition: 0.8);
+    addShape(shape);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
+    super.onCollision(intersectionPoints, other);
+
+    if (other is Enemy) {
+      print("Player hit enemy");
+    }
+  }
 
   // This method is called by game class for every frame.
   @override
@@ -37,5 +67,53 @@ class Player extends SpriteComponent with KnowsGameSize {
   // Changes the current move direction with given new move direction.
   void setMoveDirection(Vector2 newMoveDirection) {
     _moveDirection = newMoveDirection;
+  }
+
+  @override
+  void joystickAction(JoystickActionEvent event) {
+    if (event.id == 0 && event.event == ActionEvent.down) {
+      Bullet bullet = Bullet(
+        sprite: gameRef.spriteSheet.getSpriteById(28),
+        size: Vector2(64, 64),
+        position: this.position.clone(),
+      );
+
+      // Anchor it to center and add to game world.
+      bullet.anchor = Anchor.center;
+      gameRef.add(bullet);
+    }
+  }
+
+  @override
+  void joystickChangeDirectional(JoystickDirectionalEvent event) {
+    switch (event.directional) {
+      case JoystickMoveDirectional.moveUp:
+        this.setMoveDirection(Vector2(0, -1));
+        break;
+      case JoystickMoveDirectional.moveUpLeft:
+        this.setMoveDirection(Vector2(-1, -1));
+        break;
+      case JoystickMoveDirectional.moveUpRight:
+        this.setMoveDirection(Vector2(1, -1));
+        break;
+      case JoystickMoveDirectional.moveRight:
+        this.setMoveDirection(Vector2(1, 0));
+        break;
+      case JoystickMoveDirectional.moveDown:
+        this.setMoveDirection(Vector2(0, 1));
+        break;
+      case JoystickMoveDirectional.moveDownRight:
+        this.setMoveDirection(Vector2(1, 1));
+        break;
+      case JoystickMoveDirectional.moveDownLeft:
+        this.setMoveDirection(Vector2(-1, 1));
+        break;
+      case JoystickMoveDirectional.moveLeft:
+        this.setMoveDirection(Vector2(-1, 0));
+        break;
+      case JoystickMoveDirectional.idle:
+        this.setMoveDirection(Vector2.zero());
+        break;
+    }
   }
 }
