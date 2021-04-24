@@ -2,14 +2,27 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
+import 'package:flame/particles.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 
 import 'bullet.dart';
+import 'game.dart';
 import 'knows_game_size.dart';
 
 // This class represent an enemy component.
-class Enemy extends SpriteComponent with KnowsGameSize, Hitbox, Collidable {
+class Enemy extends SpriteComponent
+    with KnowsGameSize, Hitbox, Collidable, HasGameRef<SpacescapeGame> {
   // The speed of this enemy.
   double _speed = 250;
+
+  Random _random = Random();
+
+  // This method generates a random vector with its angle
+  // between from 0 and 360 degrees.
+  Vector2 getRandomVector() {
+    return (Vector2.random(_random) - Vector2.random(_random)) * 500;
+  }
 
   Enemy({
     Sprite? sprite,
@@ -39,6 +52,27 @@ class Enemy extends SpriteComponent with KnowsGameSize, Hitbox, Collidable {
     // If the other Collidable is a Bullet, remove this Enemy.
     if (other is Bullet) {
       this.remove();
+
+      // Generate 20 white circle particles with random speed and acceleration,
+      // at current position of this enemy. Each particles lives for exactly
+      // 0.1 seconds and will get removed from the game world after that.
+      final particleComponent = ParticleComponent(
+        particle: Particle.generate(
+          count: 20,
+          lifespan: 0.1,
+          generator: (i) => AcceleratedParticle(
+            acceleration: getRandomVector().toOffset(),
+            speed: getRandomVector().toOffset(),
+            position: this.position.clone().toOffset(),
+            child: CircleParticle(
+              radius: 2,
+              paint: Paint()..color = Colors.white,
+            ),
+          ),
+        ),
+      );
+
+      gameRef.add(particleComponent);
     }
   }
 

@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
+import 'package:flame/particles.dart';
+import 'package:flutter/material.dart';
 
 import 'knows_game_size.dart';
 import 'bullet.dart';
@@ -20,6 +24,15 @@ class Player extends SpriteComponent
 
   // Move speed of this player.
   double _speed = 300;
+
+  Random _random = Random();
+
+  // This method generates a random vector such that
+  // its x component lies between [-100 to 100] and
+  // y component lies between [200, 400]
+  Vector2 getRandomVector() {
+    return (Vector2.random(_random) - Vector2(0.5, -1)) * 200;
+  }
 
   Player({
     Sprite? sprite,
@@ -62,6 +75,25 @@ class Player extends SpriteComponent
           Vector2.zero() + this.size / 2,
           gameSize - this.size / 2,
         );
+
+    final particleComponent = ParticleComponent(
+      particle: Particle.generate(
+        count: 10,
+        lifespan: 0.1,
+        generator: (i) => AcceleratedParticle(
+          acceleration: getRandomVector().toOffset(),
+          speed: getRandomVector().toOffset(),
+          position:
+              (this.position.clone() + Vector2(0, this.size.y / 3)).toOffset(),
+          child: CircleParticle(
+            radius: 1,
+            paint: Paint()..color = Colors.white,
+          ),
+        ),
+      ),
+    );
+
+    gameRef.add(particleComponent);
   }
 
   // Changes the current move direction with given new move direction.
