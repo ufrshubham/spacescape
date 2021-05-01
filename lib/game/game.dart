@@ -13,13 +13,19 @@ import 'player.dart';
 class SpacescapeGame extends BaseGame
     with HasCollidables, HasDraggableComponents {
   // Stores a reference to player component.
-  late Player _player;
+  late Player player;
 
   // Stores a reference to the main spritesheet.
   late SpriteSheet spriteSheet;
 
   // Stores a reference to an enemy manager component.
   late EnemyManager _enemyManager;
+
+  // Displays player score on top left.
+  late TextComponent _playerScore;
+
+  // Displays player helth on top right.
+  late TextComponent _playerHealth;
 
   // This method gets called by Flame before the game-loop begins.
   // Assets loading and adding component should be done here.
@@ -34,15 +40,15 @@ class SpacescapeGame extends BaseGame
       rows: 6,
     );
 
-    _player = Player(
+    player = Player(
       sprite: spriteSheet.getSpriteById(6),
       size: Vector2(64, 64),
       position: viewport.canvasSize / 2,
     );
 
     // Makes sure that the sprite is centered.
-    _player.anchor = Anchor.center;
-    add(_player);
+    player.anchor = Anchor.center;
+    add(player);
 
     _enemyManager = EnemyManager(spriteSheet: spriteSheet);
     add(_enemyManager);
@@ -66,8 +72,46 @@ class SpacescapeGame extends BaseGame
     );
 
     // Make sure to add player as an observer of this joystick.
-    joystick.addObserver(_player);
+    joystick.addObserver(player);
     add(joystick);
+
+    // Create text component for player score.
+    _playerScore = TextComponent(
+      'Score: 0',
+      position: Vector2(10, 10),
+      config: TextConfig(
+        color: Colors.white,
+        fontSize: 16,
+      ),
+    );
+
+    // Setting isHud to true makes sure that this component
+    // does not get affected by camera's transformations.
+    _playerScore.isHud = true;
+
+    add(_playerScore);
+
+    // Create text component for player health.
+    _playerHealth = TextComponent(
+      'Health: 100%',
+      position: Vector2(size.x - 10, 10),
+      config: TextConfig(
+        color: Colors.white,
+        fontSize: 16,
+      ),
+    );
+
+    // Anchor to top right as we want the top right
+    // corner of this component to be at a specific position.
+    _playerHealth.anchor = Anchor.topRight;
+
+    // Setting isHud to true makes sure that this component
+    // does not get affected by camera's transformations.
+    _playerHealth.isHud = true;
+
+    add(_playerHealth);
+
+    this.camera.shakeIntensity = 20;
   }
 
   @override
@@ -89,5 +133,25 @@ class SpacescapeGame extends BaseGame
     this.components.whereType<KnowsGameSize>().forEach((component) {
       component.onResize(this.size);
     });
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    // Update score and health components with latest values.
+    _playerScore.text = 'Score: ${player.score}';
+    _playerHealth.text = 'Health: ${player.health}%';
+  }
+
+  @override
+  void render(Canvas canvas) {
+    // Draws a rectangular health bar at top right corner.
+    canvas.drawRect(
+      Rect.fromLTWH(size.x - 110, 10, player.health.toDouble(), 20),
+      Paint()..color = Colors.blue,
+    );
+
+    super.render(canvas);
   }
 }

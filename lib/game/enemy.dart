@@ -9,6 +9,7 @@ import 'package:flutter/painting.dart';
 import 'bullet.dart';
 import 'game.dart';
 import 'knows_game_size.dart';
+import 'player.dart';
 
 // This class represent an enemy component.
 class Enemy extends SpriteComponent
@@ -50,8 +51,11 @@ class Enemy extends SpriteComponent
     super.onCollision(intersectionPoints, other);
 
     // If the other Collidable is a Bullet, remove this Enemy.
-    if (other is Bullet) {
+    if (other is Bullet || other is Player) {
       this.remove();
+
+      // Before dying, increase player's score by 1.
+      gameRef.player.score += 1;
 
       // Generate 20 white circle particles with random speed and acceleration,
       // at current position of this enemy. Each particles lives for exactly

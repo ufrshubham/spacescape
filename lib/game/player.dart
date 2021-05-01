@@ -25,6 +25,9 @@ class Player extends SpriteComponent
   // Move speed of this player.
   double _speed = 300;
 
+  int score = 0;
+  int health = 100;
+
   Random _random = Random();
 
   // This method generates a random vector such that
@@ -54,8 +57,15 @@ class Player extends SpriteComponent
   void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
     super.onCollision(intersectionPoints, other);
 
+    // If other entity is an Enemy, reduce player's health by 10.
     if (other is Enemy) {
-      print("Player hit enemy");
+      // Make the camera shake.
+      gameRef.camera.shake();
+
+      health -= 10;
+      if (health <= 0) {
+        health = 0;
+      }
     }
   }
 
