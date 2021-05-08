@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 import 'bullet.dart';
+import 'command.dart';
 import 'game.dart';
 import 'knows_game_size.dart';
 import 'player.dart';
@@ -52,32 +53,41 @@ class Enemy extends SpriteComponent
 
     // If the other Collidable is a Bullet, remove this Enemy.
     if (other is Bullet || other is Player) {
-      this.remove();
+      destroy();
+    }
+  }
 
-      // Before dying, increase player's score by 1.
-      gameRef.player.score += 1;
+  // This method will destory this enemy.
+  void destroy() {
+    this.remove();
 
-      // Generate 20 white circle particles with random speed and acceleration,
-      // at current position of this enemy. Each particles lives for exactly
-      // 0.1 seconds and will get removed from the game world after that.
-      final particleComponent = ParticleComponent(
-        particle: Particle.generate(
-          count: 20,
-          lifespan: 0.1,
-          generator: (i) => AcceleratedParticle(
-            acceleration: getRandomVector().toOffset(),
-            speed: getRandomVector().toOffset(),
-            position: this.position.clone().toOffset(),
-            child: CircleParticle(
-              radius: 2,
-              paint: Paint()..color = Colors.white,
-            ),
+    // Before dying, register a command to increase
+    // player's score by 1.
+    final command = Command<Player>(action: (player) {
+      player.addToScore(1);
+    });
+    gameRef.addCommand(command);
+
+    // Generate 20 white circle particles with random speed and acceleration,
+    // at current position of this enemy. Each particles lives for exactly
+    // 0.1 seconds and will get removed from the game world after that.
+    final particleComponent = ParticleComponent(
+      particle: Particle.generate(
+        count: 20,
+        lifespan: 0.1,
+        generator: (i) => AcceleratedParticle(
+          acceleration: getRandomVector().toOffset(),
+          speed: getRandomVector().toOffset(),
+          position: this.position.clone().toOffset(),
+          child: CircleParticle(
+            radius: 2,
+            paint: Paint()..color = Colors.white,
           ),
         ),
-      );
+      ),
+    );
 
-      gameRef.add(particleComponent);
-    }
+    gameRef.add(particleComponent);
   }
 
   @override

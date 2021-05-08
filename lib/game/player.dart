@@ -5,6 +5,7 @@ import 'package:flame/geometry.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 
+import 'command.dart';
 import 'knows_game_size.dart';
 import 'bullet.dart';
 import 'enemy.dart';
@@ -25,8 +26,13 @@ class Player extends SpriteComponent
   // Move speed of this player.
   double _speed = 300;
 
-  int score = 0;
-  int health = 100;
+  // Player score.
+  int _score = 0;
+  int get score => _score;
+
+  // Player health.
+  int _health = 100;
+  int get health => _health;
 
   Random _random = Random();
 
@@ -62,9 +68,9 @@ class Player extends SpriteComponent
       // Make the camera shake.
       gameRef.camera.shake();
 
-      health -= 10;
-      if (health <= 0) {
-        health = 0;
+      _health -= 10;
+      if (_health <= 0) {
+        _health = 0;
       }
     }
   }
@@ -124,6 +130,15 @@ class Player extends SpriteComponent
       bullet.anchor = Anchor.center;
       gameRef.add(bullet);
     }
+
+    // Temporary code to test Command system.
+    if (event.id == 1 && event.event == ActionEvent.down) {
+      final command = Command<Enemy>(action: (enemy) {
+        enemy.destroy();
+      });
+
+      gameRef.addCommand(command);
+    }
   }
 
   @override
@@ -157,5 +172,10 @@ class Player extends SpriteComponent
         this.setMoveDirection(Vector2.zero());
         break;
     }
+  }
+
+  // Adds given points to player score.
+  void addToScore(int points) {
+    _score += points;
   }
 }

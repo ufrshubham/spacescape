@@ -5,6 +5,7 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'command.dart';
 import 'enemy_manager.dart';
 import 'knows_game_size.dart';
 import 'player.dart';
@@ -13,7 +14,7 @@ import 'player.dart';
 class SpacescapeGame extends BaseGame
     with HasCollidables, HasDraggableComponents {
   // Stores a reference to player component.
-  late Player player;
+  late Player _player;
 
   // Stores a reference to the main spritesheet.
   late SpriteSheet spriteSheet;
@@ -26,6 +27,12 @@ class SpacescapeGame extends BaseGame
 
   // Displays player helth on top right.
   late TextComponent _playerHealth;
+
+  // List of commands to be processed in current update.
+  final _commandList = List<Command>.empty(growable: true);
+
+  // List of commands to be processed in next update.
+  final _addLaterCommandList = List<Command>.empty(growable: true);
 
   // This method gets called by Flame before the game-loop begins.
   // Assets loading and adding component should be done here.
@@ -40,15 +47,15 @@ class SpacescapeGame extends BaseGame
       rows: 6,
     );
 
-    player = Player(
+    _player = Player(
       sprite: spriteSheet.getSpriteById(6),
       size: Vector2(64, 64),
       position: viewport.canvasSize / 2,
     );
 
     // Makes sure that the sprite is centered.
-    player.anchor = Anchor.center;
-    add(player);
+    _player.anchor = Anchor.center;
+    add(_player);
 
     _enemyManager = EnemyManager(spriteSheet: spriteSheet);
     add(_enemyManager);
@@ -68,11 +75,19 @@ class SpacescapeGame extends BaseGame
             30,
           ),
         ),
+        JoystickAction(
+          actionId: 1,
+          size: 60,
+          color: Colors.red,
+          margin: const EdgeInsets.all(
+            100,
+          ),
+        ),
       ],
     );
 
     // Make sure to add player as an observer of this joystick.
-    joystick.addObserver(player);
+    joystick.addObserver(_player);
     add(joystick);
 
     // Create text component for player score.
@@ -139,19 +154,40 @@ class SpacescapeGame extends BaseGame
   void update(double dt) {
     super.update(dt);
 
+    // Run each command from _commandList on each
+    // component from components list. The run()
+    // method of Command is no-op if the command is
+    // not valid for given component.
+    _commandList.forEach((command) {
+      components.forEach((component) {
+        command.run(component);
+      });
+    });
+
+    // Remove all the commands that are processed and
+    // add all new commands to be processed in next update.
+    _commandList.clear();
+    _commandList.addAll(_addLaterCommandList);
+    _addLaterCommandList.clear();
+
     // Update score and health components with latest values.
-    _playerScore.text = 'Score: ${player.score}';
-    _playerHealth.text = 'Health: ${player.health}%';
+    _playerScore.text = 'Score: ${_player.score}';
+    _playerHealth.text = 'Health: ${_player.health}%';
   }
 
   @override
   void render(Canvas canvas) {
     // Draws a rectangular health bar at top right corner.
     canvas.drawRect(
-      Rect.fromLTWH(size.x - 110, 10, player.health.toDouble(), 20),
+      Rect.fromLTWH(size.x - 110, 10, _player.health.toDouble(), 20),
       Paint()..color = Colors.blue,
     );
 
     super.render(canvas);
+  }
+
+  // Adds given command to command list.
+  void addCommand(Command command) {
+    _addLaterCommandList.add(command);
   }
 }
