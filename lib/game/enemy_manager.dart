@@ -76,4 +76,11 @@ class EnemyManager extends BaseComponent
     // Update timer with delta time to make it tick.
     _timer.update(dt);
   }
+
+  // Stops and restarts the timer. Should be called
+  // while restarting and exiting the game.
+  void reset() {
+    _timer.stop();
+    _timer.start();
+  }
 }

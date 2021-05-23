@@ -1,6 +1,5 @@
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'screens/main_menu.dart';
 
@@ -12,13 +11,13 @@ void main() {
 
   runApp(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       // Dark more because we are too cool for white theme.
       themeMode: ThemeMode.dark,
-      // We are even too cool for default dark theme, so use
-      // copyWith() to set textTheme and scaffoldBackgroundColor
-      // to match our level of coolness 😆.
-      darkTheme: ThemeData.dark().copyWith(
-        textTheme: GoogleFonts.bungeeInlineTextTheme(),
+      // Use custom theme with 'BungeeInline' font.
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        fontFamily: 'BungeeInline',
         scaffoldBackgroundColor: Colors.black,
       ),
       // MainMenu will be the first screen for now.

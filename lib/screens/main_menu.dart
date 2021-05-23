@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spacescape/screens/game_play.dart';
+
+import '../screens/game_play.dart';
 
 // Represents the main menu screen of Spacescape, allowing
 // players to start the game or modify in-game settings.
@@ -18,16 +19,17 @@ class MainMenu extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 50.0),
               child: Text(
                 'Spacescape',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1
-                    ?.copyWith(fontSize: 50.0, shadows: [
-                  Shadow(
-                    blurRadius: 20.0,
-                    color: Colors.white,
-                    offset: Offset(0, 0),
-                  )
-                ]),
+                style: TextStyle(
+                  fontSize: 50.0,
+                  color: Colors.black,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 20.0,
+                      color: Colors.white,
+                      offset: Offset(0, 0),
+                    )
+                  ],
+                ),
               ),
             ),
 

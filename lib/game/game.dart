@@ -4,6 +4,8 @@ import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:spacescape/game/bullet.dart';
+import 'package:spacescape/game/enemy.dart';
 
 import 'command.dart';
 import 'enemy_manager.dart';
@@ -34,99 +36,109 @@ class SpacescapeGame extends BaseGame
   // List of commands to be processed in next update.
   final _addLaterCommandList = List<Command>.empty(growable: true);
 
+  // Indicates wheater the game world has been already initilized.
+  bool _isAlreadyLoaded = false;
+
   // This method gets called by Flame before the game-loop begins.
   // Assets loading and adding component should be done here.
   @override
   Future<void> onLoad() async {
-    // Loads and caches the image for later use.
-    await images.load('simpleSpace_tilesheet@2.png');
+    // Initilize the game world only one time.
+    if (!_isAlreadyLoaded) {
+      // Loads and caches the image for later use.
+      await images.load('simpleSpace_tilesheet@2.png');
 
-    spriteSheet = SpriteSheet.fromColumnsAndRows(
-      image: images.fromCache('simpleSpace_tilesheet@2.png'),
-      columns: 8,
-      rows: 6,
-    );
+      spriteSheet = SpriteSheet.fromColumnsAndRows(
+        image: images.fromCache('simpleSpace_tilesheet@2.png'),
+        columns: 8,
+        rows: 6,
+      );
 
-    _player = Player(
-      sprite: spriteSheet.getSpriteById(6),
-      size: Vector2(64, 64),
-      position: viewport.canvasSize / 2,
-    );
+      _player = Player(
+        sprite: spriteSheet.getSpriteById(6),
+        size: Vector2(64, 64),
+        position: viewport.canvasSize / 2,
+      );
 
-    // Makes sure that the sprite is centered.
-    _player.anchor = Anchor.center;
-    add(_player);
+      // Makes sure that the sprite is centered.
+      _player.anchor = Anchor.center;
+      add(_player);
 
-    _enemyManager = EnemyManager(spriteSheet: spriteSheet);
-    add(_enemyManager);
+      _enemyManager = EnemyManager(spriteSheet: spriteSheet);
+      add(_enemyManager);
 
-    // Create a basic joystick component with a joystick on left
-    // and a fire button on right.
-    final joystick = JoystickComponent(
-      gameRef: this,
-      directional: JoystickDirectional(
-        size: 100,
-      ),
-      actions: [
-        JoystickAction(
-          actionId: 0,
-          size: 60,
-          margin: const EdgeInsets.all(
-            30,
-          ),
+      // Create a basic joystick component with a joystick on left
+      // and a fire button on right.
+      final joystick = JoystickComponent(
+        gameRef: this,
+        directional: JoystickDirectional(
+          size: 100,
         ),
-        JoystickAction(
-          actionId: 1,
-          size: 60,
-          color: Colors.red,
-          margin: const EdgeInsets.all(
-            100,
+        actions: [
+          JoystickAction(
+            actionId: 0,
+            size: 60,
+            margin: const EdgeInsets.all(
+              30,
+            ),
           ),
+          JoystickAction(
+            actionId: 1,
+            size: 60,
+            color: Colors.red,
+            margin: const EdgeInsets.all(
+              100,
+            ),
+          ),
+        ],
+      );
+
+      // Make sure to add player as an observer of this joystick.
+      joystick.addObserver(_player);
+      add(joystick);
+
+      // Create text component for player score.
+      _playerScore = TextComponent(
+        'Score: 0',
+        position: Vector2(10, 10),
+        config: TextConfig(
+          color: Colors.white,
+          fontSize: 16,
         ),
-      ],
-    );
+      );
 
-    // Make sure to add player as an observer of this joystick.
-    joystick.addObserver(_player);
-    add(joystick);
+      // Setting isHud to true makes sure that this component
+      // does not get affected by camera's transformations.
+      _playerScore.isHud = true;
 
-    // Create text component for player score.
-    _playerScore = TextComponent(
-      'Score: 0',
-      position: Vector2(10, 10),
-      config: TextConfig(
-        color: Colors.white,
-        fontSize: 16,
-      ),
-    );
+      add(_playerScore);
 
-    // Setting isHud to true makes sure that this component
-    // does not get affected by camera's transformations.
-    _playerScore.isHud = true;
+      // Create text component for player health.
+      _playerHealth = TextComponent(
+        'Health: 100%',
+        position: Vector2(size.x - 10, 10),
+        config: TextConfig(
+          color: Colors.white,
+          fontSize: 16,
+        ),
+      );
 
-    add(_playerScore);
+      // Anchor to top right as we want the top right
+      // corner of this component to be at a specific position.
+      _playerHealth.anchor = Anchor.topRight;
 
-    // Create text component for player health.
-    _playerHealth = TextComponent(
-      'Health: 100%',
-      position: Vector2(size.x - 10, 10),
-      config: TextConfig(
-        color: Colors.white,
-        fontSize: 16,
-      ),
-    );
+      // Setting isHud to true makes sure that this component
+      // does not get affected by camera's transformations.
+      _playerHealth.isHud = true;
 
-    // Anchor to top right as we want the top right
-    // corner of this component to be at a specific position.
-    _playerHealth.anchor = Anchor.topRight;
+      add(_playerHealth);
 
-    // Setting isHud to true makes sure that this component
-    // does not get affected by camera's transformations.
-    _playerHealth.isHud = true;
+      this.camera.shakeIntensity = 20;
 
-    add(_playerHealth);
-
-    this.camera.shakeIntensity = 20;
+      // Set this to true so that we do not initilize
+      // everything again in the same session.
+      _isAlreadyLoaded = true;
+    }
   }
 
   @override
@@ -189,5 +201,25 @@ class SpacescapeGame extends BaseGame
   // Adds given command to command list.
   void addCommand(Command command) {
     _addLaterCommandList.add(command);
+  }
+
+  // Resets the game to inital state. Should be called
+  // while restarting and exiting the game.
+  void reset() {
+    // First reset player and enemy manager.
+    _player.reset();
+    _enemyManager.reset();
+
+    // Now remove all the enemies and bullets from
+    // game world. Note that, we are not calling
+    // Enemy.destroy() because it will unnecessarily
+    // run explosion effect and increase players score.
+    components.whereType<Enemy>().forEach((enemy) {
+      enemy.remove();
+    });
+
+    components.whereType<Bullet>().forEach((bullet) {
+      bullet.remove();
+    });
   }
 }

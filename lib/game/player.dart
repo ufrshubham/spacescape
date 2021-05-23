@@ -178,4 +178,12 @@ class Player extends SpriteComponent
   void addToScore(int points) {
     _score += points;
   }
+
+  // Resets player score, health and position. Should be called
+  // while restarting and exiting the game.
+  void reset() {
+    this._score = 0;
+    this._health = 100;
+    this.position = gameRef.viewport.canvasSize / 2;
+  }
 }
