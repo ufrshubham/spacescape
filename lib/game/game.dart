@@ -4,10 +4,14 @@ import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:spacescape/game/bullet.dart';
-import 'package:spacescape/game/enemy.dart';
+import 'package:provider/provider.dart';
 
+import '../models/player_data.dart';
+import '../models/spaceship_details.dart';
+
+import 'bullet.dart';
 import 'command.dart';
+import 'enemy.dart';
 import 'enemy_manager.dart';
 import 'knows_game_size.dart';
 import 'player.dart';
@@ -54,8 +58,15 @@ class SpacescapeGame extends BaseGame
         rows: 6,
       );
 
+      /// As build context is not valid in onLoad() method, we
+      /// cannot get current [PlayerData] here. So initilize player
+      /// with the default SpaceshipType.Canary.
+      final spaceshipType = SpaceshipType.Canary;
+      final spaceship = Spaceship.getSpaceshipByType(spaceshipType);
+
       _player = Player(
-        sprite: spriteSheet.getSpriteById(6),
+        spaceshipType: spaceshipType,
+        sprite: spriteSheet.getSpriteById(spaceship.spriteId),
         size: Vector2(64, 64),
         position: viewport.canvasSize / 2,
       );
@@ -139,6 +150,19 @@ class SpacescapeGame extends BaseGame
       // everything again in the same session.
       _isAlreadyLoaded = true;
     }
+  }
+
+  // This method gets called when game instance gets attached
+  // to Flutter's widget tree.
+  @override
+  void onAttach() {
+    if (buildContext != null) {
+      // Get the PlayerData from current build context without registering a listener.
+      final playerData = Provider.of<PlayerData>(buildContext!, listen: false);
+      // Update the current spaceship type of player.
+      _player.setSpaceshipType(playerData.spaceshipType);
+    }
+    super.onAttach();
   }
 
   @override

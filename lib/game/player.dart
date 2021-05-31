@@ -5,6 +5,8 @@ import 'package:flame/geometry.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 
+import '../models/spaceship_details.dart';
+
 import 'command.dart';
 import 'knows_game_size.dart';
 import 'bullet.dart';
@@ -23,9 +25,6 @@ class Player extends SpriteComponent
   // It is just used for getting a direction.
   Vector2 _moveDirection = Vector2.zero();
 
-  // Move speed of this player.
-  double _speed = 300;
-
   // Player score.
   int _score = 0;
   int get score => _score;
@@ -33,6 +32,12 @@ class Player extends SpriteComponent
   // Player health.
   int _health = 100;
   int get health => _health;
+
+  // Details of current spaceship.
+  Spaceship _spaceship;
+
+  // Type of current spaceship.
+  SpaceshipType spaceshipType;
 
   Random _random = Random();
 
@@ -44,10 +49,12 @@ class Player extends SpriteComponent
   }
 
   Player({
+    required this.spaceshipType,
     Sprite? sprite,
     Vector2? position,
     Vector2? size,
-  }) : super(sprite: sprite, position: position, size: size);
+  })  : this._spaceship = Spaceship.getSpaceshipByType(spaceshipType),
+        super(sprite: sprite, position: position, size: size);
 
   @override
   void onMount() {
@@ -80,11 +87,11 @@ class Player extends SpriteComponent
   void update(double dt) {
     super.update(dt);
 
-    // Increment the current position of player by speed * delta time along moveDirection.
+    // Increment the current position of player by (speed * delta time) along moveDirection.
     // Delta time is the time elapsed since last update. For devices with higher frame rates, delta time
     // will be smaller and for devices with lower frame rates, it will be larger. Multiplying speed with
     // delta time ensure that player speed remains same irrespective of the device FPS.
-    this.position += _moveDirection.normalized() * _speed * dt;
+    this.position += _moveDirection.normalized() * _spaceship.speed * dt;
 
     // Clamp position of player such that the player sprite does not go outside the screen size.
     this.position.clamp(
@@ -92,6 +99,7 @@ class Player extends SpriteComponent
           gameSize - this.size / 2,
         );
 
+    // Adds thruster particles.
     final particleComponent = ParticleComponent(
       particle: Particle.generate(
         count: 10,
@@ -185,5 +193,14 @@ class Player extends SpriteComponent
     this._score = 0;
     this._health = 100;
     this.position = gameRef.viewport.canvasSize / 2;
+  }
+
+  // Changes the current spaceship type with given spaceship type.
+  // This method also takes care of updating the internal spaceship details
+  // as well as the spaceship sprite.
+  void setSpaceshipType(SpaceshipType spaceshipType) {
+    this.spaceshipType = spaceshipType;
+    this._spaceship = Spaceship.getSpaceshipByType(spaceshipType);
+    sprite = gameRef.spriteSheet.getSpriteById(_spaceship.spriteId);
   }
 }

@@ -441,5 +441,13 @@ $RECYCLE.BIN/
 
 # assets
 assets/images/simpleSpace_tilesheet@2.png
+assets/images/ship_A.png
+assets/images/ship_B.png
+assets/images/ship_C.png
+assets/images/ship_D.png
+assets/images/ship_E.png
+assets/images/ship_F.png
+assets/images/ship_G.png
+assets/images/ship_H.png
 assets/fonts/BungeeInline/BungeeInline-Regular.ttf
 assets/fonts/BungeeInline/OFL.txt
