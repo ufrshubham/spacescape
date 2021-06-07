@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../screens/game_play.dart';
+import 'select_spaceship.dart';
 
 // Represents the main menu screen of Spacescape, allowing
 // players to start the game or modify in-game settings.
@@ -39,10 +39,10 @@ class MainMenu extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   // Push and replace current screen (i.e MainMenu) with
-                  // GamePlay, because back press will be blocked by GamePlay.
+                  // SelectSpaceship(), so that player can select a spaceship.
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const GamePlay(),
+                      builder: (context) => const SelectSpaceship(),
                     ),
                   );
                 },

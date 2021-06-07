@@ -101,7 +101,7 @@ class Spaceship {
       cost: 1000,
       speed: 450,
       spriteId: 7,
-      assetPath: 'assets/images/ship_h.png',
+      assetPath: 'assets/images/ship_H.png',
       level: 4,
     ),
   };

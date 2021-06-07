@@ -6,7 +6,7 @@ import 'spaceship_details.dart';
 // might want to store for tracking player progress.
 class PlayerData extends ChangeNotifier {
   // The spaceship type of player's current spaceship.
-  final SpaceshipType spaceshipType;
+  SpaceshipType spaceshipType;
 
   // List of all the spaceships owned by player.
   // Note that just storing their type is enough.
@@ -16,7 +16,7 @@ class PlayerData extends ChangeNotifier {
   final int highScore;
 
   // Balance money.
-  final int money;
+  int money;
 
   PlayerData({
     required this.spaceshipType,
@@ -44,4 +44,34 @@ class PlayerData extends ChangeNotifier {
     'highScore': 0,
     'money': 0,
   };
+
+  /// Returns true if given [SpaceshipType] is owned by player.
+  bool isOwned(SpaceshipType spaceshipType) {
+    return this.ownedSpaceships.contains(spaceshipType);
+  }
+
+  /// Returns true if player has enough money to by given [SpaceshipType].
+  bool canBuy(SpaceshipType spaceshipType) {
+    return (this.money >= Spaceship.getSpaceshipByType(spaceshipType).cost);
+  }
+
+  /// Returns true if player's current spaceship type is same as given [SpaceshipType].
+  bool isEquipped(SpaceshipType spaceshipType) {
+    return (this.spaceshipType == spaceshipType);
+  }
+
+  /// Buys the given [SpaceshipType] if player has enough money and does not already own it.
+  void buy(SpaceshipType spaceshipType) {
+    if (canBuy(spaceshipType) && (!isOwned(spaceshipType))) {
+      this.money -= Spaceship.getSpaceshipByType(spaceshipType).cost;
+      this.ownedSpaceships.add(spaceshipType);
+      notifyListeners();
+    }
+  }
+
+  /// Sets the given [SpaceshipType] as the current spaceship type for player.
+  void equip(SpaceshipType spaceshipType) {
+    this.spaceshipType = spaceshipType;
+    notifyListeners();
+  }
 }
