@@ -153,7 +153,7 @@ class SelectSpaceship extends StatelessWidget {
                     ),
                   );
                 },
-                child: Icon(Icons.arrow_back_ios_new_rounded),
+                child: Icon(Icons.arrow_back),
               ),
             ),
           ],
