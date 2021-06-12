@@ -4,7 +4,9 @@ import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../models/player_data.dart';
 import '../models/spaceship_details.dart';
 
 import 'command.dart';
@@ -39,6 +41,10 @@ class Player extends SpriteComponent
   // Type of current spaceship.
   SpaceshipType spaceshipType;
 
+  // A reference to PlayerData so that
+  // we can modify money.
+  late PlayerData _playerData;
+
   Random _random = Random();
 
   // This method generates a random vector such that
@@ -64,6 +70,8 @@ class Player extends SpriteComponent
     // the smallest dimension of this components size.
     final shape = HitboxCircle(definition: 0.8);
     addShape(shape);
+
+    _playerData = Provider.of<PlayerData>(gameRef.buildContext!, listen: false);
   }
 
   @override
@@ -182,9 +190,11 @@ class Player extends SpriteComponent
     }
   }
 
-  // Adds given points to player score.
+  // Adds given points to player score
+  /// and also add it to [PlayerData.money].
   void addToScore(int points) {
     _score += points;
+    _playerData.money += points;
   }
 
   // Resets player score, health and position. Should be called

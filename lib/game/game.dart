@@ -6,6 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/overlays/game_over_menu.dart';
+import '../widgets/overlays/pause_button.dart';
+import '../widgets/overlays/pause_menu.dart';
+
 import '../models/player_data.dart';
 import '../models/spaceship_details.dart';
 
@@ -91,14 +95,6 @@ class SpacescapeGame extends BaseGame
             size: 60,
             margin: const EdgeInsets.all(
               30,
-            ),
-          ),
-          JoystickAction(
-            actionId: 1,
-            size: 60,
-            color: Colors.red,
-            margin: const EdgeInsets.all(
-              100,
             ),
           ),
         ],
@@ -209,6 +205,14 @@ class SpacescapeGame extends BaseGame
     // Update score and health components with latest values.
     _playerScore.text = 'Score: ${_player.score}';
     _playerHealth.text = 'Health: ${_player.health}%';
+
+    /// Display [GameOverMenu] when [Player.health] becomes
+    /// zero and camera stops shaking.
+    if (_player.health <= 0 && (!camera.shaking)) {
+      this.pauseEngine();
+      this.overlays.remove(PauseButton.ID);
+      this.overlays.add(GameOverMenu.ID);
+    }
   }
 
   @override
@@ -220,6 +224,27 @@ class SpacescapeGame extends BaseGame
     );
 
     super.render(canvas);
+  }
+
+  // This method handles state of app and pauses
+  // the game when necessary.
+  @override
+  void lifecycleStateChange(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        if (this._player.health > 0) {
+          this.pauseEngine();
+          this.overlays.remove(PauseButton.ID);
+          this.overlays.add(PauseMenu.ID);
+        }
+        break;
+    }
+
+    super.lifecycleStateChange(state);
   }
 
   // Adds given command to command list.
