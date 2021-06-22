@@ -1,19 +1,18 @@
 import 'dart:math';
 
-import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flame/particles.dart';
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/player_data.dart';
 import '../models/spaceship_details.dart';
 
-import 'command.dart';
-import 'knows_game_size.dart';
-import 'bullet.dart';
-import 'enemy.dart';
 import 'game.dart';
+import 'enemy.dart';
+import 'bullet.dart';
+import 'knows_game_size.dart';
 
 // This component class represents the player character in game.
 class Player extends SpriteComponent
@@ -45,6 +44,13 @@ class Player extends SpriteComponent
   // we can modify money.
   late PlayerData _playerData;
 
+  // If true, player will shoot 3 bullets at a time.
+  bool _shootMultipleBullets = false;
+
+  // Controls for how long multi-bullet power up is active.
+  late Timer _powerUpTimer;
+
+  // Holds an object of Random class to generate random numbers.
   Random _random = Random();
 
   // This method generates a random vector such that
@@ -60,7 +66,13 @@ class Player extends SpriteComponent
     Vector2? position,
     Vector2? size,
   })  : this._spaceship = Spaceship.getSpaceshipByType(spaceshipType),
-        super(sprite: sprite, position: position, size: size);
+        super(sprite: sprite, position: position, size: size) {
+    // Sets power up timer to 4 seconds. After 4 seconds,
+    // multiple bullet will get deactivated.
+    _powerUpTimer = Timer(4, callback: () {
+      _shootMultipleBullets = false;
+    });
+  }
 
   @override
   void onMount() {
@@ -95,6 +107,8 @@ class Player extends SpriteComponent
   void update(double dt) {
     super.update(dt);
 
+    _powerUpTimer.update(dt);
+
     // Increment the current position of player by (speed * delta time) along moveDirection.
     // Delta time is the time elapsed since last update. For devices with higher frame rates, delta time
     // will be smaller and for devices with lower frame rates, it will be larger. Multiplying speed with
@@ -113,10 +127,9 @@ class Player extends SpriteComponent
         count: 10,
         lifespan: 0.1,
         generator: (i) => AcceleratedParticle(
-          acceleration: getRandomVector().toOffset(),
-          speed: getRandomVector().toOffset(),
-          position:
-              (this.position.clone() + Vector2(0, this.size.y / 3)).toOffset(),
+          acceleration: getRandomVector(),
+          speed: getRandomVector(),
+          position: (this.position.clone() + Vector2(0, this.size.y / 3)),
           child: CircleParticle(
             radius: 1,
             paint: Paint()..color = Colors.white,
@@ -145,15 +158,23 @@ class Player extends SpriteComponent
       // Anchor it to center and add to game world.
       bullet.anchor = Anchor.center;
       gameRef.add(bullet);
-    }
 
-    // Temporary code to test Command system.
-    if (event.id == 1 && event.event == ActionEvent.down) {
-      final command = Command<Enemy>(action: (enemy) {
-        enemy.destroy();
-      });
+      // If multiple bullet is on, add two more
+      // bullets rotated +-PI/6 radians to first bullet.
+      if (_shootMultipleBullets) {
+        for (int i = -1; i < 2; i += 2) {
+          Bullet bullet = Bullet(
+            sprite: gameRef.spriteSheet.getSpriteById(28),
+            size: Vector2(64, 64),
+            position: this.position.clone(),
+          );
 
-      gameRef.addCommand(command);
+          // Anchor it to center and add to game world.
+          bullet.anchor = Anchor.center;
+          bullet.direction.rotate(i * pi / 6);
+          gameRef.add(bullet);
+        }
+      }
     }
   }
 
@@ -197,6 +218,15 @@ class Player extends SpriteComponent
     _playerData.money += points;
   }
 
+  // Increases health by give amount.
+  void increaseHealthBy(int points) {
+    _health += points;
+    // Clamps health to 100.
+    if (_health > 100) {
+      _health = 100;
+    }
+  }
+
   // Resets player score, health and position. Should be called
   // while restarting and exiting the game.
   void reset() {
@@ -212,5 +242,12 @@ class Player extends SpriteComponent
     this.spaceshipType = spaceshipType;
     this._spaceship = Spaceship.getSpaceshipByType(spaceshipType);
     sprite = gameRef.spriteSheet.getSpriteById(_spaceship.spriteId);
+  }
+
+  // Allows player to first multiple bullets for 4 seconds when called.
+  void shootMultipleBullets() {
+    _shootMultipleBullets = true;
+    _powerUpTimer.stop();
+    _powerUpTimer.start();
   }
 }

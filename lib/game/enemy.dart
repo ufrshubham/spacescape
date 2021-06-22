@@ -1,16 +1,16 @@
 import 'dart:math';
 
-import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flame/particles.dart';
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
-import 'bullet.dart';
-import 'command.dart';
 import 'game.dart';
-import 'knows_game_size.dart';
+import 'bullet.dart';
 import 'player.dart';
+import 'command.dart';
+import 'knows_game_size.dart';
 
 // This class represent an enemy component.
 class Enemy extends SpriteComponent
@@ -18,6 +18,10 @@ class Enemy extends SpriteComponent
   // The speed of this enemy.
   double _speed = 250;
 
+  // Controls for how long enemy should be freezed.
+  late Timer _freezeTimer;
+
+  // Holds an object of Random class to generate random numbers.
   Random _random = Random();
 
   // This method generates a random vector with its angle
@@ -35,6 +39,11 @@ class Enemy extends SpriteComponent
     // all the sprites initially face the same direct, but we want enemies to be
     // moving in opposite direction.
     angle = pi;
+
+    // Sets freeze time to 2 seconds. After 2 seconds speed will be reset.
+    _freezeTimer = Timer(2, callback: () {
+      _speed = 250;
+    });
   }
 
   @override
@@ -76,9 +85,9 @@ class Enemy extends SpriteComponent
         count: 20,
         lifespan: 0.1,
         generator: (i) => AcceleratedParticle(
-          acceleration: getRandomVector().toOffset(),
-          speed: getRandomVector().toOffset(),
-          position: this.position.clone().toOffset(),
+          acceleration: getRandomVector(),
+          speed: getRandomVector(),
+          position: this.position.clone(),
           child: CircleParticle(
             radius: 2,
             paint: Paint()..color = Colors.white,
@@ -94,6 +103,8 @@ class Enemy extends SpriteComponent
   void update(double dt) {
     super.update(dt);
 
+    _freezeTimer.update(dt);
+
     // Update the position of this enemy using its speed and delta time.
     this.position += Vector2(0, 1) * _speed * dt;
 
@@ -101,5 +112,12 @@ class Enemy extends SpriteComponent
     if (this.position.y > this.gameSize.y) {
       remove();
     }
+  }
+
+  // Pauses enemy for 2 seconds when called.
+  void freeze() {
+    _speed = 0;
+    _freezeTimer.stop();
+    _freezeTimer.start();
   }
 }

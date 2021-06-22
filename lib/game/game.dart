@@ -5,20 +5,21 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:spacescape/game/power_ups.dart';
 
-import '../widgets/overlays/game_over_menu.dart';
-import '../widgets/overlays/pause_button.dart';
 import '../widgets/overlays/pause_menu.dart';
+import '../widgets/overlays/pause_button.dart';
+import '../widgets/overlays/game_over_menu.dart';
 
 import '../models/player_data.dart';
 import '../models/spaceship_details.dart';
 
+import 'enemy.dart';
+import 'player.dart';
 import 'bullet.dart';
 import 'command.dart';
-import 'enemy.dart';
 import 'enemy_manager.dart';
 import 'knows_game_size.dart';
-import 'player.dart';
 
 // This class is responsible for initializing and running the game-loop.
 class SpacescapeGame extends BaseGame
@@ -53,8 +54,14 @@ class SpacescapeGame extends BaseGame
   Future<void> onLoad() async {
     // Initilize the game world only one time.
     if (!_isAlreadyLoaded) {
-      // Loads and caches the image for later use.
-      await images.load('simpleSpace_tilesheet@2.png');
+      // Loads and caches all the images for later use.
+      await images.loadAll([
+        'simpleSpace_tilesheet@2.png',
+        'freeze.png',
+        'icon_plusSmall.png',
+        'multi_fire.png',
+        'nuke.png',
+      ]);
 
       spriteSheet = SpriteSheet.fromColumnsAndRows(
         image: images.fromCache('simpleSpace_tilesheet@2.png'),
@@ -108,9 +115,12 @@ class SpacescapeGame extends BaseGame
       _playerScore = TextComponent(
         'Score: 0',
         position: Vector2(10, 10),
-        config: TextConfig(
-          color: Colors.white,
-          fontSize: 16,
+        textRenderer: TextPaint(
+          config: TextPaintConfig(
+            color: Colors.white,
+            fontSize: 12,
+            fontFamily: 'BungeeInline',
+          ),
         ),
       );
 
@@ -124,9 +134,12 @@ class SpacescapeGame extends BaseGame
       _playerHealth = TextComponent(
         'Health: 100%',
         position: Vector2(size.x - 10, 10),
-        config: TextConfig(
-          color: Colors.white,
-          fontSize: 16,
+        textRenderer: TextPaint(
+          config: TextPaintConfig(
+            color: Colors.white,
+            fontSize: 12,
+            fontFamily: 'BungeeInline',
+          ),
         ),
       );
 
@@ -145,6 +158,14 @@ class SpacescapeGame extends BaseGame
       // Set this to true so that we do not initilize
       // everything again in the same session.
       _isAlreadyLoaded = true;
+
+      // Temporary code to test power ups.
+      final multiFire = MultiFire(
+        size: Vector2(64, 64),
+        position: viewport.canvasSize / 2 + Vector2(0, 150),
+      );
+
+      add(multiFire);
     }
   }
 

@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame/components.dart';
 
-import 'enemy.dart';
 import 'game.dart';
+import 'enemy.dart';
 import 'knows_game_size.dart';
 
 // This component class takes care of spawning new enemy components
@@ -15,6 +15,9 @@ class EnemyManager extends BaseComponent
   // The timer which runs the enemy spawner code at regular interval of time.
   late Timer _timer;
 
+  // Controls for how long EnemyManager should stop spawning new enemies.
+  late Timer _freezeTimer;
+
   // A reference to spriteSheet contains enemy sprites.
   SpriteSheet spriteSheet;
 
@@ -24,6 +27,11 @@ class EnemyManager extends BaseComponent
   EnemyManager({required this.spriteSheet}) : super() {
     // Sets the timer to call _spawnEnemy() after every 1 second, until timer is explicitly stops.
     _timer = Timer(1, callback: _spawnEnemy, repeat: true);
+
+    // Sets freeze time to 2 seconds. After 2 seconds spawn timer will start again.
+    _freezeTimer = Timer(2, callback: () {
+      _timer.start();
+    });
   }
 
   // Spawns a new enemy at random position at the top of the screen.
@@ -73,8 +81,9 @@ class EnemyManager extends BaseComponent
   @override
   void update(double dt) {
     super.update(dt);
-    // Update timer with delta time to make it tick.
+    // Update timers with delta time to make them tick.
     _timer.update(dt);
+    _freezeTimer.update(dt);
   }
 
   // Stops and restarts the timer. Should be called
@@ -82,5 +91,12 @@ class EnemyManager extends BaseComponent
   void reset() {
     _timer.stop();
     _timer.start();
+  }
+
+  // Pauses spawn timer for 2 seconds when called.
+  void freeze() {
+    _timer.stop();
+    _freezeTimer.stop();
+    _freezeTimer.start();
   }
 }

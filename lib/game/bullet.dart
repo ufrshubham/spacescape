@@ -8,6 +8,9 @@ class Bullet extends SpriteComponent with Hitbox, Collidable {
   // Speed of the bullet.
   double _speed = 450;
 
+  // Controls the direction in which bullet travels.
+  Vector2 direction = Vector2(0, -1);
+
   Bullet({
     Sprite? sprite,
     Vector2? position,
@@ -38,8 +41,8 @@ class Bullet extends SpriteComponent with Hitbox, Collidable {
   void update(double dt) {
     super.update(dt);
 
-    // Moves the bullet to a new position with _speed.
-    this.position += Vector2(0, -1) * this._speed * dt;
+    // Moves the bullet to a new position with _speed and direction.
+    this.position += direction * this._speed * dt;
 
     // If bullet crosses the upper boundary of screen
     // mark it to be removed it from the game world.
