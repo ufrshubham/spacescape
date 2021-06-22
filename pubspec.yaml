@@ -21,7 +21,7 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  flame: 1.0.0-rc9
+  flame: 1.0.0-releasecandidate.12
   provider: ^5.0.0
   flutter_carousel_slider: ^1.0.8
   flutter:
