@@ -6,6 +6,7 @@ import 'enemy.dart';
 import 'player.dart';
 import 'command.dart';
 import 'enemy_manager.dart';
+import 'power_up_manager.dart';
 
 // An abstract class which represents power ups in this game.
 /// See [Freeze], [Health], [MultiFire] and [Nuke] for example.
@@ -129,6 +130,12 @@ class Freeze extends PowerUp {
       enemyManager.freeze();
     });
     gameRef.addCommand(command2);
+
+    /// Register a command to freeze [PowerUpManager].
+    final command3 = Command<PowerUpManager>(action: (powerUpManager) {
+      powerUpManager.freeze();
+    });
+    gameRef.addCommand(command3);
   }
 }
 

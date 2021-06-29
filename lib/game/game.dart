@@ -5,7 +5,6 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:spacescape/game/power_ups.dart';
 
 import '../widgets/overlays/pause_menu.dart';
 import '../widgets/overlays/pause_button.dart';
@@ -18,8 +17,10 @@ import 'enemy.dart';
 import 'player.dart';
 import 'bullet.dart';
 import 'command.dart';
+import 'power_ups.dart';
 import 'enemy_manager.dart';
 import 'knows_game_size.dart';
+import 'power_up_manager.dart';
 
 // This class is responsible for initializing and running the game-loop.
 class SpacescapeGame extends BaseGame
@@ -32,6 +33,9 @@ class SpacescapeGame extends BaseGame
 
   // Stores a reference to an enemy manager component.
   late EnemyManager _enemyManager;
+
+  // Stores a reference to an power-up manager component.
+  late PowerUpManager _powerUpManager;
 
   // Displays player score on top left.
   late TextComponent _playerScore;
@@ -88,6 +92,9 @@ class SpacescapeGame extends BaseGame
 
       _enemyManager = EnemyManager(spriteSheet: spriteSheet);
       add(_enemyManager);
+
+      _powerUpManager = PowerUpManager();
+      add(_powerUpManager);
 
       // Create a basic joystick component with a joystick on left
       // and a fire button on right.
@@ -158,14 +165,6 @@ class SpacescapeGame extends BaseGame
       // Set this to true so that we do not initilize
       // everything again in the same session.
       _isAlreadyLoaded = true;
-
-      // Temporary code to test power ups.
-      final multiFire = MultiFire(
-        size: Vector2(64, 64),
-        position: viewport.canvasSize / 2 + Vector2(0, 150),
-      );
-
-      add(multiFire);
     }
   }
 
@@ -276,12 +275,13 @@ class SpacescapeGame extends BaseGame
   // Resets the game to inital state. Should be called
   // while restarting and exiting the game.
   void reset() {
-    // First reset player and enemy manager.
+    // First reset player, enemy manager and power-up manager .
     _player.reset();
     _enemyManager.reset();
+    _powerUpManager.reset();
 
-    // Now remove all the enemies and bullets from
-    // game world. Note that, we are not calling
+    // Now remove all the enemies, bullets and power ups
+    // from the game world. Note that, we are not calling
     // Enemy.destroy() because it will unnecessarily
     // run explosion effect and increase players score.
     components.whereType<Enemy>().forEach((enemy) {
@@ -290,6 +290,10 @@ class SpacescapeGame extends BaseGame
 
     components.whereType<Bullet>().forEach((bullet) {
       bullet.remove();
+    });
+
+    components.whereType<PowerUp>().forEach((powerUp) {
+      powerUp.remove();
     });
   }
 }
