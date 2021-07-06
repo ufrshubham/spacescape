@@ -12,11 +12,17 @@ import 'player.dart';
 import 'command.dart';
 import 'knows_game_size.dart';
 
+import '../models/enemy_data.dart';
+
 // This class represent an enemy component.
 class Enemy extends SpriteComponent
     with KnowsGameSize, Hitbox, Collidable, HasGameRef<SpacescapeGame> {
   // The speed of this enemy.
   double _speed = 250;
+
+  // This direction in which this Enemy will move.
+  // Defaults to vertically downwards.
+  Vector2 moveDirection = Vector2(0, 1);
 
   // Controls for how long enemy should be freezed.
   late Timer _freezeTimer;
@@ -24,26 +30,43 @@ class Enemy extends SpriteComponent
   // Holds an object of Random class to generate random numbers.
   Random _random = Random();
 
+  // The data required to create this enemy.
+  final EnemyData enemyData;
+
   // This method generates a random vector with its angle
   // between from 0 and 360 degrees.
   Vector2 getRandomVector() {
     return (Vector2.random(_random) - Vector2.random(_random)) * 500;
   }
 
+  // Returns a random direction vector with slight angle to +ve y axis.
+  Vector2 getRandomDirection() {
+    return (Vector2.random(_random) - Vector2(0.5, -1)).normalized();
+  }
+
   Enemy({
-    Sprite? sprite,
-    Vector2? position,
-    Vector2? size,
+    required Sprite? sprite,
+    required this.enemyData,
+    required Vector2? position,
+    required Vector2? size,
   }) : super(sprite: sprite, position: position, size: size) {
     // Rotates the enemy component by 180 degrees. This is needed because
     // all the sprites initially face the same direct, but we want enemies to be
     // moving in opposite direction.
     angle = pi;
 
+    // Set the current speed from enemyData.
+    _speed = enemyData.speed;
+
     // Sets freeze time to 2 seconds. After 2 seconds speed will be reset.
     _freezeTimer = Timer(2, callback: () {
-      _speed = 250;
+      _speed = enemyData.speed;
     });
+
+    // If this enemy can move horizontally, randomize the move direction.
+    if (enemyData.hMove) {
+      moveDirection = getRandomDirection();
+    }
   }
 
   @override
@@ -106,11 +129,15 @@ class Enemy extends SpriteComponent
     _freezeTimer.update(dt);
 
     // Update the position of this enemy using its speed and delta time.
-    this.position += Vector2(0, 1) * _speed * dt;
+    this.position += moveDirection * _speed * dt;
 
     // If the enemy leaves the screen, destroy it.
     if (this.position.y > this.gameSize.y) {
       remove();
+    } else if ((this.position.x < this.size.x / 2) ||
+        (this.position.x > (this.gameSize.x - size.x / 2))) {
+      // Enemy is going outside vertical screen bounds, flip its x direction.
+      moveDirection.x *= -1;
     }
   }
 

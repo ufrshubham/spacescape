@@ -23,6 +23,13 @@ class PowerUpManager extends BaseComponent
   // A random number generator.
   Random random = Random();
 
+  // Storing these static sprites so that
+  // they stay alive across multiple restarts.
+  static late Sprite nukeSprite;
+  static late Sprite healthSprite;
+  static late Sprite freezeSprite;
+  static late Sprite multiFireSprite;
+
   // A private static map which stores a generator function for each power up.
   static Map<PowerUpTypes, PowerUp Function(Vector2 position, Vector2 size)>
       _powerUpMap = {
@@ -93,6 +100,12 @@ class PowerUpManager extends BaseComponent
   void onMount() {
     // Start the spawn timer as soon as this component is mounted.
     _spawnTimer.start();
+
+    healthSprite = Sprite(gameRef.images.fromCache('icon_plusSmall.png'));
+    nukeSprite = Sprite(gameRef.images.fromCache('nuke.png'));
+    freezeSprite = Sprite(gameRef.images.fromCache('freeze.png'));
+    multiFireSprite = Sprite(gameRef.images.fromCache('multi_fire.png'));
+
     super.onMount();
   }
 

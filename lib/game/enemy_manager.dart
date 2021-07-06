@@ -7,6 +7,8 @@ import 'game.dart';
 import 'enemy.dart';
 import 'knows_game_size.dart';
 
+import '../models/enemy_data.dart';
+
 // This component class takes care of spawning new enemy components
 // randomly from top of the screen. It uses the HasGameRef mixin so that
 // it can add child components.
@@ -48,10 +50,15 @@ class EnemyManager extends BaseComponent
       gameSize - initialSize / 2,
     );
 
+    /// Gets a random [EnemyData] object from the list.
+    final enemyData =
+        _enemyDataList.elementAt(random.nextInt(_enemyDataList.length));
+
     Enemy enemy = Enemy(
-      sprite: spriteSheet.getSpriteById(13),
+      sprite: spriteSheet.getSpriteById(enemyData.spriteId),
       size: initialSize,
       position: position,
+      enemyData: enemyData,
     );
 
     // Makes sure that the enemy sprite is centered.
@@ -99,4 +106,120 @@ class EnemyManager extends BaseComponent
     _freezeTimer.stop();
     _freezeTimer.start();
   }
+
+  /// A private list of all [EnemyData]s.
+  static const List<EnemyData> _enemyDataList = [
+    EnemyData(
+      killPoint: 1,
+      speed: 200,
+      spriteId: 8,
+      level: 1,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 2,
+      speed: 200,
+      spriteId: 9,
+      level: 1,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 4,
+      speed: 200,
+      spriteId: 10,
+      level: 1,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 4,
+      speed: 200,
+      spriteId: 11,
+      level: 1,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 6,
+      speed: 250,
+      spriteId: 12,
+      level: 2,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 6,
+      speed: 250,
+      spriteId: 13,
+      level: 2,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 6,
+      speed: 250,
+      spriteId: 14,
+      level: 2,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 6,
+      speed: 250,
+      spriteId: 15,
+      level: 2,
+      hMove: true,
+    ),
+    EnemyData(
+      killPoint: 10,
+      speed: 350,
+      spriteId: 16,
+      level: 3,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 10,
+      speed: 350,
+      spriteId: 17,
+      level: 3,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 10,
+      speed: 400,
+      spriteId: 18,
+      level: 3,
+      hMove: true,
+    ),
+    EnemyData(
+      killPoint: 10,
+      speed: 400,
+      spriteId: 19,
+      level: 3,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 10,
+      speed: 400,
+      spriteId: 20,
+      level: 4,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 50,
+      speed: 250,
+      spriteId: 21,
+      level: 4,
+      hMove: true,
+    ),
+    EnemyData(
+      killPoint: 50,
+      speed: 250,
+      spriteId: 22,
+      level: 4,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 50,
+      speed: 250,
+      spriteId: 23,
+      level: 4,
+      hMove: false,
+    )
+  ];
 }
