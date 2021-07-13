@@ -160,8 +160,6 @@ class SpacescapeGame extends BaseGame
 
       add(_playerHealth);
 
-      this.camera.shakeIntensity = 20;
-
       // Set this to true so that we do not initilize
       // everything again in the same session.
       _isAlreadyLoaded = true;

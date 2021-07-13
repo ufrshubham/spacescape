@@ -2,12 +2,14 @@ import 'dart:math';
 
 import 'package:flame/sprite.dart';
 import 'package:flame/components.dart';
+import 'package:provider/provider.dart';
 
 import 'game.dart';
 import 'enemy.dart';
 import 'knows_game_size.dart';
 
 import '../models/enemy_data.dart';
+import '../models/player_data.dart';
 
 // This component class takes care of spawning new enemy components
 // randomly from top of the screen. It uses the HasGameRef mixin so that
@@ -50,23 +52,48 @@ class EnemyManager extends BaseComponent
       gameSize - initialSize / 2,
     );
 
-    /// Gets a random [EnemyData] object from the list.
-    final enemyData =
-        _enemyDataList.elementAt(random.nextInt(_enemyDataList.length));
+    // Make sure that we have a valid BuildContext before using it.
+    if (gameRef.buildContext != null) {
+      // Get current score and figure out the max level of enemy that
+      // can be spawned for this score.
+      int currentScore =
+          Provider.of<PlayerData>(gameRef.buildContext!, listen: false)
+              .currentScore;
+      int maxLevel = mapScoreToMaxEnemyLevel(currentScore);
 
-    Enemy enemy = Enemy(
-      sprite: spriteSheet.getSpriteById(enemyData.spriteId),
-      size: initialSize,
-      position: position,
-      enemyData: enemyData,
-    );
+      /// Gets a random [EnemyData] object from the list.
+      final enemyData = _enemyDataList.elementAt(random.nextInt(maxLevel * 4));
 
-    // Makes sure that the enemy sprite is centered.
-    enemy.anchor = Anchor.center;
+      Enemy enemy = Enemy(
+        sprite: spriteSheet.getSpriteById(enemyData.spriteId),
+        size: initialSize,
+        position: position,
+        enemyData: enemyData,
+      );
 
-    // Add it to components list of game instance, instead of EnemyManager.
-    // This ensures the collision detection working correctly.
-    gameRef.add(enemy);
+      // Makes sure that the enemy sprite is centered.
+      enemy.anchor = Anchor.center;
+
+      // Add it to components list of game instance, instead of EnemyManager.
+      // This ensures the collision detection working correctly.
+      gameRef.add(enemy);
+    }
+  }
+
+  // For a given score, this method returns a max level
+  // of enemy that can be used for spawning.
+  int mapScoreToMaxEnemyLevel(int score) {
+    int level = 1;
+
+    if (score > 1500) {
+      level = 4;
+    } else if (score > 500) {
+      level = 3;
+    } else if (score > 100) {
+      level = 2;
+    }
+
+    return level;
   }
 
   @override

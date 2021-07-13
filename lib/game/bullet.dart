@@ -11,10 +11,15 @@ class Bullet extends SpriteComponent with Hitbox, Collidable {
   // Controls the direction in which bullet travels.
   Vector2 direction = Vector2(0, -1);
 
+  // Level of this bullet. Essentially represents the
+  // level of spaceship that fired this bullet.
+  final int level;
+
   Bullet({
-    Sprite? sprite,
-    Vector2? position,
-    Vector2? size,
+    required Sprite? sprite,
+    required Vector2? position,
+    required Vector2? size,
+    required this.level,
   }) : super(sprite: sprite, position: position, size: size);
 
   @override

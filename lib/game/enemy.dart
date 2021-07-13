@@ -33,6 +33,21 @@ class Enemy extends SpriteComponent
   // The data required to create this enemy.
   final EnemyData enemyData;
 
+  // Represents health of this enemy.
+  int _hitPoints = 10;
+
+  // To display health in game world.
+  TextComponent _hpText = TextComponent(
+    '10 HP',
+    textRenderer: TextPaint(
+      config: TextPaintConfig(
+        color: Colors.white,
+        fontSize: 12,
+        fontFamily: 'BungeeInline',
+      ),
+    ),
+  );
+
   // This method generates a random vector with its angle
   // between from 0 and 360 degrees.
   Vector2 getRandomVector() {
@@ -58,6 +73,10 @@ class Enemy extends SpriteComponent
     // Set the current speed from enemyData.
     _speed = enemyData.speed;
 
+    // Set hitpoint to correct value from enemyData.
+    _hitPoints = enemyData.level * 10;
+    _hpText.text = '$_hitPoints HP';
+
     // Sets freeze time to 2 seconds. After 2 seconds speed will be reset.
     _freezeTimer = Timer(2, callback: () {
       _speed = enemyData.speed;
@@ -77,15 +96,31 @@ class Enemy extends SpriteComponent
     // the smallest dimension of this components size.
     final shape = HitboxCircle(definition: 0.8);
     addShape(shape);
+
+    // As current component is already rotated by pi radians,
+    // the text component needs to be again rotated by pi radians
+    // so that it is displayed correctly.
+    _hpText.angle = pi;
+
+    // To place the text just behind the enemy.
+    _hpText.position = Vector2(50, 80);
+
+    // Add as child of current component.
+    addChild(_hpText);
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
     super.onCollision(intersectionPoints, other);
 
-    // If the other Collidable is a Bullet, remove this Enemy.
-    if (other is Bullet || other is Player) {
-      destroy();
+    if (other is Bullet) {
+      // If the other Collidable is a Bullet,
+      // reduce health by level of bullet times 10.
+      _hitPoints -= other.level * 10;
+    } else if (other is Player) {
+      // If the other Collidable is Player,
+      // reduce health to zero at once.
+      _hitPoints = 0;
     }
   }
 
@@ -96,7 +131,8 @@ class Enemy extends SpriteComponent
     // Before dying, register a command to increase
     // player's score by 1.
     final command = Command<Player>(action: (player) {
-      player.addToScore(1);
+      // Use the correct killPoint to increase player's score.
+      player.addToScore(enemyData.killPoint);
     });
     gameRef.addCommand(command);
 
@@ -125,6 +161,15 @@ class Enemy extends SpriteComponent
   @override
   void update(double dt) {
     super.update(dt);
+
+    // Sync-up text component and value of hitPoints.
+    _hpText.text = '$_hitPoints HP';
+
+    // If hitPoints have reduced to zero,
+    // destroy this enemy.
+    if (_hitPoints <= 0) {
+      destroy();
+    }
 
     _freezeTimer.update(dt);
 

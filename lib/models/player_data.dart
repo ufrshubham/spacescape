@@ -18,6 +18,11 @@ class PlayerData extends ChangeNotifier {
   // Balance money.
   int money;
 
+  // Keeps track of current score.
+  // If game is not running, this will
+  // represent score of last round.
+  int currentScore = 0;
+
   PlayerData({
     required this.spaceshipType,
     required this.ownedSpaceships,

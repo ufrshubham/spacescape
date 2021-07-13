@@ -92,8 +92,8 @@ class Player extends SpriteComponent
 
     // If other entity is an Enemy, reduce player's health by 10.
     if (other is Enemy) {
-      // Make the camera shake.
-      gameRef.camera.shake();
+      // Make the camera shake, with custom intensity.
+      gameRef.camera.shake(intensity: 20);
 
       _health -= 10;
       if (_health <= 0) {
@@ -153,6 +153,7 @@ class Player extends SpriteComponent
         sprite: gameRef.spriteSheet.getSpriteById(28),
         size: Vector2(64, 64),
         position: this.position.clone(),
+        level: _spaceship.level,
       );
 
       // Anchor it to center and add to game world.
@@ -167,6 +168,7 @@ class Player extends SpriteComponent
             sprite: gameRef.spriteSheet.getSpriteById(28),
             size: Vector2(64, 64),
             position: this.position.clone(),
+            level: _spaceship.level,
           );
 
           // Anchor it to center and add to game world.
@@ -216,6 +218,9 @@ class Player extends SpriteComponent
   void addToScore(int points) {
     _score += points;
     _playerData.money += points;
+
+    // Sync-up currentScore and _score.
+    _playerData.currentScore = _score;
   }
 
   // Increases health by give amount.
