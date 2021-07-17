@@ -1,5 +1,9 @@
 // This class represents all the data
 // which defines a spaceship.
+import 'package:hive/hive.dart';
+
+part 'spaceship_details.g.dart';
+
 class Spaceship {
   // Name of the spaceship.
   final String name;
@@ -109,13 +113,29 @@ class Spaceship {
 
 // This enum represents all the spaceship
 // types available in this game.
+@HiveType(typeId: 1)
 enum SpaceshipType {
+  @HiveField(0)
   Canary,
+
+  @HiveField(1)
   Dusky,
+
+  @HiveField(2)
   Condor,
+
+  @HiveField(3)
   CXC,
+
+  @HiveField(4)
   Raptor,
+
+  @HiveField(5)
   RaptorX,
+
+  @HiveField(6)
   Albatross,
+
+  @HiveField(7)
   DK809,
 }

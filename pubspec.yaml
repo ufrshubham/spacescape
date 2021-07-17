@@ -24,6 +24,10 @@ dependencies:
   flame: 1.0.0-releasecandidate.13
   provider: ^5.0.0
   flutter_carousel_slider: ^1.0.8
+  hive: 2.0.4
+  hive_generator: 1.1.0
+  path_provider: 2.0.2
+
   flutter:
     sdk: flutter
 
@@ -32,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
+  build_runner: 2.0.6
   flutter_test:
     sdk: flutter
 

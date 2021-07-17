@@ -1,43 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 import 'spaceship_details.dart';
 
+part 'player_data.g.dart';
+
 // This class represents all the persistent data that we
 // might want to store for tracking player progress.
-class PlayerData extends ChangeNotifier {
+@HiveType(typeId: 0)
+class PlayerData extends ChangeNotifier with HiveObjectMixin {
   // The spaceship type of player's current spaceship.
+  @HiveField(0)
   SpaceshipType spaceshipType;
 
   // List of all the spaceships owned by player.
   // Note that just storing their type is enough.
+  @HiveField(1)
   final List<SpaceshipType> ownedSpaceships;
 
   // Highest player score so far.
-  final int highScore;
+  @HiveField(2)
+  late int _highScore;
+  int get highScore => _highScore;
 
   // Balance money.
+  @HiveField(3)
   int money;
 
   // Keeps track of current score.
   // If game is not running, this will
   // represent score of last round.
-  int currentScore = 0;
+  int _currentScore = 0;
+
+  int get currentScore => _currentScore;
+
+  set currentScore(int newScore) {
+    _currentScore = newScore;
+    // While setting currentScore to a new value
+    // also make sure to update highScore.
+    if (_highScore < _currentScore) {
+      _highScore = _currentScore;
+    }
+  }
 
   PlayerData({
     required this.spaceshipType,
     required this.ownedSpaceships,
-    required this.highScore,
+    required int highScore,
     required this.money,
-  });
+  }) {
+    _highScore = highScore;
+  }
 
-  /// Creates a new instace of [PlayerData] from given map.
+  /// Creates a new instance of [PlayerData] from given map.
   PlayerData.fromMap(Map<String, dynamic> map)
       : this.spaceshipType = map['currentSpaceshipType'],
         this.ownedSpaceships = map['ownedSpaceshipTypes']
             .map((e) => e as SpaceshipType) // Map out each element.
             .cast<SpaceshipType>() // Cast each element to SpaceshipType.
             .toList(), // Convert to a List<SpaceshipType>.
-        this.highScore = map['highScore'],
+        this._highScore = map['highScore'],
         this.money = map['money'];
 
   // A default map which should be used for creating the
@@ -71,6 +93,9 @@ class PlayerData extends ChangeNotifier {
       this.money -= Spaceship.getSpaceshipByType(spaceshipType).cost;
       this.ownedSpaceships.add(spaceshipType);
       notifyListeners();
+
+      // Saves player data to disk.
+      this.save();
     }
   }
 
@@ -78,5 +103,8 @@ class PlayerData extends ChangeNotifier {
   void equip(SpaceshipType spaceshipType) {
     this.spaceshipType = spaceshipType;
     notifyListeners();
+
+    // Saves player data to disk.
+    this.save();
   }
 }

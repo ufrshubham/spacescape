@@ -26,10 +26,6 @@ class Player extends SpriteComponent
   // It is just used for getting a direction.
   Vector2 _moveDirection = Vector2.zero();
 
-  // Player score.
-  int _score = 0;
-  int get score => _score;
-
   // Player health.
   int _health = 100;
   int get health => _health;
@@ -43,6 +39,7 @@ class Player extends SpriteComponent
   // A reference to PlayerData so that
   // we can modify money.
   late PlayerData _playerData;
+  int get score => _playerData.currentScore;
 
   // If true, player will shoot 3 bullets at a time.
   bool _shootMultipleBullets = false;
@@ -216,11 +213,11 @@ class Player extends SpriteComponent
   // Adds given points to player score
   /// and also add it to [PlayerData.money].
   void addToScore(int points) {
-    _score += points;
+    _playerData.currentScore += points;
     _playerData.money += points;
 
-    // Sync-up currentScore and _score.
-    _playerData.currentScore = _score;
+    // Saves player data to disk.
+    _playerData.save();
   }
 
   // Increases health by give amount.
@@ -235,7 +232,7 @@ class Player extends SpriteComponent
   // Resets player score, health and position. Should be called
   // while restarting and exiting the game.
   void reset() {
-    this._score = 0;
+    _playerData.currentScore = 0;
     this._health = 100;
     this.position = gameRef.viewport.canvasSize / 2;
   }
