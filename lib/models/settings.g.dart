@@ -1,40 +1,34 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'player_data.dart';
+part of 'settings.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class PlayerDataAdapter extends TypeAdapter<PlayerData> {
+class SettingsAdapter extends TypeAdapter<Settings> {
   @override
-  final int typeId = 0;
+  final int typeId = 2;
 
   @override
-  PlayerData read(BinaryReader reader) {
+  Settings read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return PlayerData(
-      spaceshipType: fields[0] as SpaceshipType,
-      ownedSpaceships: (fields[1] as List).cast<SpaceshipType>(),
-      money: fields[3] as int,
-    ).._highScore = fields[2] as int;
+    return Settings()
+      .._sfx = fields[0] as bool
+      .._bgm = fields[1] as bool;
   }
 
   @override
-  void write(BinaryWriter writer, PlayerData obj) {
+  void write(BinaryWriter writer, Settings obj) {
     writer
-      ..writeByte(4)
-      ..writeByte(0)
-      ..write(obj.spaceshipType)
-      ..writeByte(1)
-      ..write(obj.ownedSpaceships)
       ..writeByte(2)
-      ..write(obj._highScore)
-      ..writeByte(3)
-      ..write(obj.money);
+      ..writeByte(0)
+      ..write(obj._sfx)
+      ..writeByte(1)
+      ..write(obj._bgm);
   }
 
   @override
@@ -43,7 +37,7 @@ class PlayerDataAdapter extends TypeAdapter<PlayerData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PlayerDataAdapter &&
+      other is SettingsAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

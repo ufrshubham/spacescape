@@ -1,7 +1,7 @@
-import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +21,7 @@ import 'power_ups.dart';
 import 'enemy_manager.dart';
 import 'knows_game_size.dart';
 import 'power_up_manager.dart';
+import 'audio_player_component.dart';
 
 // This class is responsible for initializing and running the game-loop.
 class SpacescapeGame extends BaseGame
@@ -42,6 +43,8 @@ class SpacescapeGame extends BaseGame
 
   // Displays player helth on top right.
   late TextComponent _playerHealth;
+
+  late AudioPlayerComponent _audioPlayerComponent;
 
   // List of commands to be processed in current update.
   final _commandList = List<Command>.empty(growable: true);
@@ -66,6 +69,9 @@ class SpacescapeGame extends BaseGame
         'multi_fire.png',
         'nuke.png',
       ]);
+
+      _audioPlayerComponent = AudioPlayerComponent();
+      add(_audioPlayerComponent);
 
       spriteSheet = SpriteSheet.fromColumnsAndRows(
         image: images.fromCache('simpleSpace_tilesheet@2.png'),
@@ -176,7 +182,14 @@ class SpacescapeGame extends BaseGame
       // Update the current spaceship type of player.
       _player.setSpaceshipType(playerData.spaceshipType);
     }
+    _audioPlayerComponent.playBgm('9. Space Invaders.wav');
     super.onAttach();
+  }
+
+  @override
+  void onDetach() {
+    _audioPlayerComponent.stopBgm();
+    super.onDetach();
   }
 
   @override

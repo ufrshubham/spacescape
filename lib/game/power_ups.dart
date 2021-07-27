@@ -7,6 +7,7 @@ import 'player.dart';
 import 'command.dart';
 import 'enemy_manager.dart';
 import 'power_up_manager.dart';
+import 'audio_player_component.dart';
 
 // An abstract class which represents power ups in this game.
 /// See [Freeze], [Health], [MultiFire] and [Nuke] for example.
@@ -59,6 +60,10 @@ abstract class PowerUp extends SpriteComponent
     // If the other entity is Player, call the overriden
     // onActivated method and mark this component to be removed.
     if (other is Player) {
+      // Ask audio player to play power up activation effect.
+      gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+        audioPlayer.playSfx('powerUp6.ogg');
+      }));
       onActivated();
       remove();
     }

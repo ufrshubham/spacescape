@@ -11,6 +11,7 @@ import 'bullet.dart';
 import 'player.dart';
 import 'command.dart';
 import 'knows_game_size.dart';
+import 'audio_player_component.dart';
 
 import '../models/enemy_data.dart';
 
@@ -126,6 +127,11 @@ class Enemy extends SpriteComponent
 
   // This method will destory this enemy.
   void destroy() {
+    // Ask audio player to play enemy destroy effect.
+    gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+      audioPlayer.playSfx('laser1.ogg');
+    }));
+
     this.remove();
 
     // Before dying, register a command to increase

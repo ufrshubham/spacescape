@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'settings_menu.dart';
 import 'select_spaceship.dart';
 
 // Represents the main menu screen of Spacescape, allowing
@@ -50,14 +51,18 @@ class MainMenu extends StatelessWidget {
               ),
             ),
 
-            // Options button.
+            // Settings button.
             SizedBox(
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Navigate to options screen.
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsMenu(),
+                    ),
+                  );
                 },
-                child: Text('Options'),
+                child: Text('Settings'),
               ),
             ),
           ],

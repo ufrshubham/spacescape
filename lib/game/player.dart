@@ -12,7 +12,9 @@ import '../models/spaceship_details.dart';
 import 'game.dart';
 import 'enemy.dart';
 import 'bullet.dart';
+import 'command.dart';
 import 'knows_game_size.dart';
+import 'audio_player_component.dart';
 
 // This component class represents the player character in game.
 class Player extends SpriteComponent
@@ -156,6 +158,11 @@ class Player extends SpriteComponent
       // Anchor it to center and add to game world.
       bullet.anchor = Anchor.center;
       gameRef.add(bullet);
+
+      // Ask audio player to play bullet fire effect.
+      gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+        audioPlayer.playSfx('laserSmall_001.ogg');
+      }));
 
       // If multiple bullet is on, add two more
       // bullets rotated +-PI/6 radians to first bullet.

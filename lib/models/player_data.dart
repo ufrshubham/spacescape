@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:flutter/material.dart';
 
 import 'spaceship_details.dart';
 
@@ -9,6 +9,9 @@ part 'player_data.g.dart';
 // might want to store for tracking player progress.
 @HiveType(typeId: 0)
 class PlayerData extends ChangeNotifier with HiveObjectMixin {
+  static const String PLAYER_DATA_BOX = 'PlayerDataBox';
+  static const String PLAYER_DATA_KEY = 'PlayerData';
+
   // The spaceship type of player's current spaceship.
   @HiveField(0)
   SpaceshipType spaceshipType;
@@ -46,7 +49,7 @@ class PlayerData extends ChangeNotifier with HiveObjectMixin {
   PlayerData({
     required this.spaceshipType,
     required this.ownedSpaceships,
-    required int highScore,
+    int highScore = 0,
     required this.money,
   }) {
     _highScore = highScore;
