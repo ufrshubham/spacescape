@@ -1,4 +1,5 @@
 import 'package:flame/game.dart';
+import 'package:flame/parallax.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
@@ -72,6 +73,17 @@ class SpacescapeGame extends BaseGame
 
       _audioPlayerComponent = AudioPlayerComponent();
       add(_audioPlayerComponent);
+
+      ParallaxComponent _stars = await ParallaxComponent.load(
+        [
+          ParallaxImageData('stars1.png'),
+          ParallaxImageData('stars2.png'),
+        ],
+        repeat: ImageRepeat.repeat,
+        baseVelocity: Vector2(0, -50),
+        velocityMultiplierDelta: Vector2(0, 1.5),
+      );
+      add(_stars);
 
       spriteSheet = SpriteSheet.fromColumnsAndRows(
         image: images.fromCache('simpleSpace_tilesheet@2.png'),
