@@ -1,10 +1,10 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/geometry.dart';
 
 import 'enemy.dart';
 
 // This component represent a bullet in game world.
-class Bullet extends SpriteComponent with Hitbox, Collidable {
+class Bullet extends SpriteComponent with CollisionCallbacks {
   // Speed of the bullet.
   double _speed = 450;
 
@@ -28,17 +28,22 @@ class Bullet extends SpriteComponent with Hitbox, Collidable {
 
     // Adding a circular hitbox with radius as 0.4 times
     //  the smallest dimension of this components size.
-    final shape = HitboxCircle(definition: 0.4);
-    addShape(shape);
+    final shape = CircleHitbox.relative(
+      0.4,
+      parentSize: this.size,
+      position: Vector2(size.x / 2, size.y / 2),
+      anchor: Anchor.center,
+    );
+    add(shape);
   }
 
   @override
-  void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
     // If the other Collidable is Enemy, remove this bullet.
     if (other is Enemy) {
-      this.remove();
+      this.removeFromParent();
     }
   }
 
@@ -52,7 +57,7 @@ class Bullet extends SpriteComponent with Hitbox, Collidable {
     // If bullet crosses the upper boundary of screen
     // mark it to be removed it from the game world.
     if (this.position.y < 0) {
-      remove();
+      removeFromParent();
     }
   }
 }

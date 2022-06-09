@@ -1,9 +1,9 @@
 import 'package:flame/game.dart';
+import 'package:flame/input.dart';
 import 'package:flame/parallax.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,8 +25,8 @@ import 'power_up_manager.dart';
 import 'audio_player_component.dart';
 
 // This class is responsible for initializing and running the game-loop.
-class SpacescapeGame extends BaseGame
-    with HasCollidables, HasDraggableComponents {
+class SpacescapeGame extends FlameGame
+    with HasDraggables, HasTappables, HasCollisionDetection {
   // Stores a reference to player component.
   late Player _player;
 
@@ -91,6 +91,19 @@ class SpacescapeGame extends BaseGame
         rows: 6,
       );
 
+      // Create a basic joystick component on left.
+      final joystick = JoystickComponent(
+        anchor: Anchor.bottomLeft,
+        position: Vector2(30, size.y - 30),
+        // size: 100,
+        background: CircleComponent(
+          radius: 60,
+          paint: Paint()..color = Colors.white.withOpacity(0.5),
+        ),
+        knob: CircleComponent(radius: 30),
+      );
+      add(joystick);
+
       /// As build context is not valid in onLoad() method, we
       /// cannot get current [PlayerData] here. So initilize player
       /// with the default SpaceshipType.Canary.
@@ -98,10 +111,11 @@ class SpacescapeGame extends BaseGame
       final spaceship = Spaceship.getSpaceshipByType(spaceshipType);
 
       _player = Player(
+        joystick: joystick,
         spaceshipType: spaceshipType,
         sprite: spriteSheet.getSpriteById(spaceship.spriteId),
         size: Vector2(64, 64),
-        position: viewport.canvasSize / 2,
+        position: canvasSize / 2,
       );
 
       // Makes sure that the sprite is centered.
@@ -114,34 +128,24 @@ class SpacescapeGame extends BaseGame
       _powerUpManager = PowerUpManager();
       add(_powerUpManager);
 
-      // Create a basic joystick component with a joystick on left
-      // and a fire button on right.
-      final joystick = JoystickComponent(
-        gameRef: this,
-        directional: JoystickDirectional(
-          size: 100,
+      // Create a fire button component on right
+      final button = ButtonComponent(
+        button: CircleComponent(
+          radius: 60,
+          paint: Paint()..color = Colors.white.withOpacity(0.5),
         ),
-        actions: [
-          JoystickAction(
-            actionId: 0,
-            size: 60,
-            margin: const EdgeInsets.all(
-              30,
-            ),
-          ),
-        ],
+        anchor: Anchor.bottomRight,
+        position: Vector2(size.x - 30, size.y - 30),
+        onPressed: _player.joystickAction,
       );
-
-      // Make sure to add player as an observer of this joystick.
-      joystick.addObserver(_player);
-      add(joystick);
+      add(button);
 
       // Create text component for player score.
       _playerScore = TextComponent(
-        'Score: 0',
+        text: 'Score: 0',
         position: Vector2(10, 10),
         textRenderer: TextPaint(
-          config: TextPaintConfig(
+          style: TextStyle(
             color: Colors.white,
             fontSize: 12,
             fontFamily: 'BungeeInline',
@@ -149,18 +153,18 @@ class SpacescapeGame extends BaseGame
         ),
       );
 
-      // Setting isHud to true makes sure that this component
+      // Setting positionType to viewport makes sure that this component
       // does not get affected by camera's transformations.
-      _playerScore.isHud = true;
+      _playerScore.positionType = PositionType.viewport;
 
       add(_playerScore);
 
       // Create text component for player health.
       _playerHealth = TextComponent(
-        'Health: 100%',
+        text: 'Health: 100%',
         position: Vector2(size.x - 10, 10),
         textRenderer: TextPaint(
-          config: TextPaintConfig(
+          style: TextStyle(
             color: Colors.white,
             fontSize: 12,
             fontFamily: 'BungeeInline',
@@ -172,9 +176,9 @@ class SpacescapeGame extends BaseGame
       // corner of this component to be at a specific position.
       _playerHealth.anchor = Anchor.topRight;
 
-      // Setting isHud to true makes sure that this component
+      // Setting positionType to viewport makes sure that this component
       // does not get affected by camera's transformations.
-      _playerHealth.isHud = true;
+      _playerHealth.positionType = PositionType.viewport;
 
       add(_playerHealth);
 
@@ -204,26 +208,32 @@ class SpacescapeGame extends BaseGame
     super.onDetach();
   }
 
-  @override
-  void prepare(Component c) {
-    super.prepare(c);
+  // ===================================
+  // IMPORTANT NOTE
+  // Those overrides are obsolete since Flame v1.2.0 version
+  // This code remains as is as a reference for the YouTube tutorial.
+  // ===================================
+  // @override
+  // void prepare(Component c) {
+  //   super.prepare(c);
 
-    // If the component being prepared is of type KnowsGameSize,
-    // call onResize() on it so that it stores the current game screen size.
-    if (c is KnowsGameSize) {
-      c.onResize(this.size);
-    }
-  }
+  //   // If the component being prepared is of type KnowsGameSize,
+  //   // call onResize() on it so that it stores the current game screen size.
+  //   if (c is KnowsGameSize) {
+  //     c.onResize(this.size);
+  //   }
+  // }
 
-  @override
-  void onResize(Vector2 canvasSize) {
-    super.onResize(canvasSize);
+  // @override
+  // void onResize(Vector2 canvasSize) {
+  //   super.onResize(canvasSize);
 
-    // Loop over all the components of type KnowsGameSize and resize then as well.
-    this.components.whereType<KnowsGameSize>().forEach((component) {
-      component.onResize(this.size);
-    });
-  }
+  //   // Loop over all the components of type KnowsGameSize and resize then as well.
+  //   this.children.whereType<KnowsGameSize>().forEach((component) {
+  //     component.onResize(this.size);
+  //   });
+  // }
+  // ===================================
 
   @override
   void update(double dt) {
@@ -234,7 +244,7 @@ class SpacescapeGame extends BaseGame
     // method of Command is no-op if the command is
     // not valid for given component.
     _commandList.forEach((command) {
-      components.forEach((component) {
+      children.forEach((component) {
         command.run(component);
       });
     });
@@ -307,16 +317,16 @@ class SpacescapeGame extends BaseGame
     // from the game world. Note that, we are not calling
     // Enemy.destroy() because it will unnecessarily
     // run explosion effect and increase players score.
-    components.whereType<Enemy>().forEach((enemy) {
-      enemy.remove();
+    children.whereType<Enemy>().forEach((enemy) {
+      enemy.removeFromParent();
     });
 
-    components.whereType<Bullet>().forEach((bullet) {
-      bullet.remove();
+    children.whereType<Bullet>().forEach((bullet) {
+      bullet.removeFromParent();
     });
 
-    components.whereType<PowerUp>().forEach((powerUp) {
-      powerUp.remove();
+    children.whereType<PowerUp>().forEach((powerUp) {
+      powerUp.removeFromParent();
     });
   }
 }

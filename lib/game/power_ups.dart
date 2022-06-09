@@ -1,5 +1,5 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/geometry.dart';
 
 import 'game.dart';
 import 'enemy.dart';
@@ -12,7 +12,7 @@ import 'audio_player_component.dart';
 // An abstract class which represents power ups in this game.
 /// See [Freeze], [Health], [MultiFire] and [Nuke] for example.
 abstract class PowerUp extends SpriteComponent
-    with HasGameRef<SpacescapeGame>, Hitbox, Collidable {
+    with HasGameRef<SpacescapeGame>, CollisionCallbacks {
   // Controls how long the power up should be visible
   // before getting destroyed if not picked.
   late Timer _timer;
@@ -32,7 +32,7 @@ abstract class PowerUp extends SpriteComponent
   }) : super(position: position, size: size, sprite: sprite) {
     // Power ups will be displayed only for 3 seconds
     // before getting destroyed.
-    _timer = Timer(3, callback: this.remove);
+    _timer = Timer(3, onTick: this.removeFromParent);
   }
 
   @override
@@ -44,8 +44,13 @@ abstract class PowerUp extends SpriteComponent
   @override
   void onMount() {
     // Add a circular hit box for this power up.
-    final shape = HitboxCircle(definition: 0.5);
-    addShape(shape);
+    final shape = CircleHitbox.relative(
+      0.5,
+      parentSize: this.size,
+      position: Vector2(size.x / 2, size.y / 2),
+      anchor: Anchor.center,
+    );
+    add(shape);
 
     // Set the correct sprite by calling overriden getSprite method.
     this.sprite = getSprite();
@@ -56,7 +61,7 @@ abstract class PowerUp extends SpriteComponent
   }
 
   @override
-  void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     // If the other entity is Player, call the overriden
     // onActivated method and mark this component to be removed.
     if (other is Player) {
@@ -65,7 +70,7 @@ abstract class PowerUp extends SpriteComponent
         audioPlayer.playSfx('powerUp6.ogg');
       }));
       onActivated();
-      remove();
+      removeFromParent();
     }
 
     super.onCollision(intersectionPoints, other);
