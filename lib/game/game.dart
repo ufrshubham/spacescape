@@ -20,7 +20,6 @@ import 'bullet.dart';
 import 'command.dart';
 import 'power_ups.dart';
 import 'enemy_manager.dart';
-import 'knows_game_size.dart';
 import 'power_up_manager.dart';
 import 'audio_player_component.dart';
 
