@@ -85,7 +85,7 @@ class Player extends SpriteComponent
     final shape = CircleHitbox.relative(
       0.8,
       parentSize: this.size,
-      position: Vector2(size.x / 2, size.y / 2),
+      position: size / 2,
       anchor: Anchor.center,
     );
     add(shape);

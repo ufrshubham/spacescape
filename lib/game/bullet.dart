@@ -31,7 +31,7 @@ class Bullet extends SpriteComponent with CollisionCallbacks {
     final shape = CircleHitbox.relative(
       0.4,
       parentSize: this.size,
-      position: Vector2(size.x / 2, size.y / 2),
+      position: size / 2,
       anchor: Anchor.center,
     );
     add(shape);
