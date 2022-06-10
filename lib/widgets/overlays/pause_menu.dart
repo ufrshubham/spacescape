@@ -70,6 +70,7 @@ class PauseMenu extends StatelessWidget {
               onPressed: () {
                 gameRef.overlays.remove(PauseMenu.ID);
                 gameRef.reset();
+                gameRef.resumeEngine();
 
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(

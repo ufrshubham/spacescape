@@ -1,10 +1,9 @@
 import 'dart:math';
 
-import 'package:flame/geometry.dart';
+import 'package:flame/collisions.dart';
 import 'package:flame/particles.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import 'game.dart';
 import 'bullet.dart';
@@ -17,7 +16,7 @@ import '../models/enemy_data.dart';
 
 // This class represent an enemy component.
 class Enemy extends SpriteComponent
-    with KnowsGameSize, Hitbox, Collidable, HasGameRef<SpacescapeGame> {
+    with KnowsGameSize, CollisionCallbacks, HasGameRef<SpacescapeGame> {
   // The speed of this enemy.
   double _speed = 250;
 
@@ -39,9 +38,9 @@ class Enemy extends SpriteComponent
 
   // To display health in game world.
   TextComponent _hpText = TextComponent(
-    '10 HP',
+    text: '10 HP',
     textRenderer: TextPaint(
-      config: TextPaintConfig(
+      style: TextStyle(
         color: Colors.white,
         fontSize: 12,
         fontFamily: 'BungeeInline',
@@ -79,7 +78,7 @@ class Enemy extends SpriteComponent
     _hpText.text = '$_hitPoints HP';
 
     // Sets freeze time to 2 seconds. After 2 seconds speed will be reset.
-    _freezeTimer = Timer(2, callback: () {
+    _freezeTimer = Timer(2, onTick: () {
       _speed = enemyData.speed;
     });
 
@@ -95,8 +94,13 @@ class Enemy extends SpriteComponent
 
     // Adding a circular hitbox with radius as 0.8 times
     // the smallest dimension of this components size.
-    final shape = HitboxCircle(definition: 0.8);
-    addShape(shape);
+    final shape = CircleHitbox.relative(
+      0.8,
+      parentSize: this.size,
+      position: size / 2,
+      anchor: Anchor.center,
+    );
+    add(shape);
 
     // As current component is already rotated by pi radians,
     // the text component needs to be again rotated by pi radians
@@ -107,11 +111,11 @@ class Enemy extends SpriteComponent
     _hpText.position = Vector2(50, 80);
 
     // Add as child of current component.
-    addChild(_hpText);
+    add(_hpText);
   }
 
   @override
-  void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
     if (other is Bullet) {
@@ -119,9 +123,8 @@ class Enemy extends SpriteComponent
       // reduce health by level of bullet times 10.
       _hitPoints -= other.level * 10;
     } else if (other is Player) {
-      // If the other Collidable is Player,
-      // reduce health to zero at once.
-      _hitPoints = 0;
+      // If the other Collidable is Player, destroy.
+      destroy();
     }
   }
 
@@ -132,7 +135,7 @@ class Enemy extends SpriteComponent
       audioPlayer.playSfx('laser1.ogg');
     }));
 
-    this.remove();
+    this.removeFromParent();
 
     // Before dying, register a command to increase
     // player's score by 1.
@@ -145,7 +148,7 @@ class Enemy extends SpriteComponent
     // Generate 20 white circle particles with random speed and acceleration,
     // at current position of this enemy. Each particles lives for exactly
     // 0.1 seconds and will get removed from the game world after that.
-    final particleComponent = ParticleComponent(
+    final particleComponent = ParticleSystemComponent(
       particle: Particle.generate(
         count: 20,
         lifespan: 0.1,
@@ -183,10 +186,10 @@ class Enemy extends SpriteComponent
     this.position += moveDirection * _speed * dt;
 
     // If the enemy leaves the screen, destroy it.
-    if (this.position.y > this.gameSize.y) {
-      remove();
+    if (this.position.y > gameRef.size.y) {
+      removeFromParent();
     } else if ((this.position.x < this.size.x / 2) ||
-        (this.position.x > (this.gameSize.x - size.x / 2))) {
+        (this.position.x > (gameRef.size.x - size.x / 2))) {
       // Enemy is going outside vertical screen bounds, flip its x direction.
       moveDirection.x *= -1;
     }

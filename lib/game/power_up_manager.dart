@@ -11,7 +11,7 @@ enum PowerUpTypes { Health, Freeze, Nuke, MultiFire }
 
 // This class/component is responsible for spawning random power ups
 // at random locations in the game world.
-class PowerUpManager extends BaseComponent
+class PowerUpManager extends Component
     with KnowsGameSize, HasGameRef<SpacescapeGame> {
   // Controls the frequency of spawning power ups.
   late Timer _spawnTimer;
@@ -53,11 +53,11 @@ class PowerUpManager extends BaseComponent
 
   PowerUpManager() : super() {
     // Makes sure that a new power up is spawned every 5 seconds.
-    _spawnTimer = Timer(5, callback: _spawnPowerUp, repeat: true);
+    _spawnTimer = Timer(5, onTick: _spawnPowerUp, repeat: true);
 
     // Restarts the spawn timer after 2 seconds are
     // elapsed from start of freeze timer.
-    _freezeTimer = Timer(2, callback: () {
+    _freezeTimer = Timer(2, onTick: () {
       _spawnTimer.start();
     });
   }
@@ -67,15 +67,15 @@ class PowerUpManager extends BaseComponent
   void _spawnPowerUp() {
     Vector2 initialSize = Vector2(64, 64);
     Vector2 position = Vector2(
-      random.nextDouble() * gameSize.x,
-      random.nextDouble() * gameSize.y,
+      random.nextDouble() * gameRef.size.x,
+      random.nextDouble() * gameRef.size.y,
     );
 
     // Clamp so that the power up does not
     // go outside the screen.
     position.clamp(
       Vector2.zero() + initialSize / 2,
-      gameSize - initialSize / 2,
+      gameRef.size - initialSize / 2,
     );
 
     // Returns a random integer from 0 to (PowerUpTypes.values.length - 1).
