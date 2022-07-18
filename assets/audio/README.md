@@ -1,6 +1,6 @@
 # Audio assets
 
-## I don't have rights to redistribute the audio assets, but you can get the original assets for following links:
+## I don't have rights to redistribute all the audio assets, but you can get the original assets for following links:
 
 - __9. Space Invaders.wav__ background music from [VOiD1 Gaming](https://void1gaming.itch.io/)'s [Free Synthwave music pack](https://void1gaming.itch.io/free-synthwave-music-pack)
 
