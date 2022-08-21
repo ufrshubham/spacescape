@@ -1,8 +1,7 @@
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'models/settings.dart';
 import 'screens/main_menu.dart';
@@ -68,8 +67,7 @@ Future<void> main() async {
 // documents directory and also registers
 // all the hive adapters.
 Future<void> initHive() async {
-  final dir = await getApplicationDocumentsDirectory();
-  Hive.init(dir.path);
+  await Hive.initFlutter();
 
   Hive.registerAdapter(PlayerDataAdapter());
   Hive.registerAdapter(SpaceshipTypeAdapter());
