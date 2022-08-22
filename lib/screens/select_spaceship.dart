@@ -21,8 +21,8 @@ class SelectSpaceship extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Game title.
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 50.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 50.0),
               child: Text(
                 'Select',
                 style: TextStyle(
@@ -66,7 +66,7 @@ class SelectSpaceship extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(spaceship.assetPath),
-                      Text('${spaceship.name}'),
+                      Text(spaceship.name),
                       Text('Speed: ${spaceship.speed}'),
                       Text('Level: ${spaceship.level}'),
                       Text('Cost: ${spaceship.cost}'),
@@ -79,13 +79,6 @@ class SelectSpaceship extends StatelessWidget {
                           final canBuy = playerData.canBuy(type);
 
                           return ElevatedButton(
-                            child: Text(
-                              isEquipped
-                                  ? 'Equipped'
-                                  : isOwned
-                                      ? 'Select'
-                                      : 'Buy',
-                            ),
                             onPressed: isEquipped
                                 ? null
                                 : () {
@@ -102,7 +95,7 @@ class SelectSpaceship extends StatelessWidget {
                                           builder: (context) {
                                             return AlertDialog(
                                               backgroundColor: Colors.red,
-                                              title: Text(
+                                              title: const Text(
                                                 'Insufficient Balance',
                                                 textAlign: TextAlign.center,
                                               ),
@@ -116,6 +109,13 @@ class SelectSpaceship extends StatelessWidget {
                                       }
                                     }
                                   },
+                            child: Text(
+                              isEquipped
+                                  ? 'Equipped'
+                                  : isOwned
+                                      ? 'Select'
+                                      : 'Buy',
+                            ),
                           );
                         },
                       ),
@@ -138,7 +138,7 @@ class SelectSpaceship extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text('Start'),
+                child: const Text('Start'),
               ),
             ),
 
@@ -153,7 +153,7 @@ class SelectSpaceship extends StatelessWidget {
                     ),
                   );
                 },
-                child: Icon(Icons.arrow_back),
+                child: const Icon(Icons.arrow_back),
               ),
             ),
           ],

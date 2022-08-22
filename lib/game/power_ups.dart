@@ -32,7 +32,7 @@ abstract class PowerUp extends SpriteComponent
   }) : super(position: position, size: size, sprite: sprite) {
     // Power ups will be displayed only for 3 seconds
     // before getting destroyed.
-    _timer = Timer(3, onTick: this.removeFromParent);
+    _timer = Timer(3, onTick: removeFromParent);
   }
 
   @override
@@ -46,14 +46,14 @@ abstract class PowerUp extends SpriteComponent
     // Add a circular hit box for this power up.
     final shape = CircleHitbox.relative(
       0.5,
-      parentSize: this.size,
+      parentSize: size,
       position: size / 2,
       anchor: Anchor.center,
     );
     add(shape);
 
     // Set the correct sprite by calling overriden getSprite method.
-    this.sprite = getSprite();
+    sprite = getSprite();
 
     // Start the timer.
     _timer.start();

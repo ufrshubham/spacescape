@@ -44,7 +44,7 @@ class Spaceship {
 
   /// This map holds all the meta-data of each [SpaceshipType].
   static const Map<SpaceshipType, Spaceship> spaceships = {
-    SpaceshipType.Canary: Spaceship(
+    SpaceshipType.canary: Spaceship(
       name: 'Canary',
       cost: 0,
       speed: 250,
@@ -52,7 +52,7 @@ class Spaceship {
       assetPath: 'assets/images/ship_A.png',
       level: 1,
     ),
-    SpaceshipType.Dusky: Spaceship(
+    SpaceshipType.dusky: Spaceship(
       name: 'Dusky',
       cost: 100,
       speed: 400,
@@ -60,7 +60,7 @@ class Spaceship {
       assetPath: 'assets/images/ship_B.png',
       level: 2,
     ),
-    SpaceshipType.Condor: Spaceship(
+    SpaceshipType.condor: Spaceship(
       name: 'Condor',
       cost: 200,
       speed: 300,
@@ -68,7 +68,7 @@ class Spaceship {
       assetPath: 'assets/images/ship_C.png',
       level: 2,
     ),
-    SpaceshipType.CXC: Spaceship(
+    SpaceshipType.cXC: Spaceship(
       name: 'CXC',
       cost: 400,
       speed: 300,
@@ -76,7 +76,7 @@ class Spaceship {
       assetPath: 'assets/images/ship_D.png',
       level: 3,
     ),
-    SpaceshipType.Raptor: Spaceship(
+    SpaceshipType.raptor: Spaceship(
       name: 'Raptor',
       cost: 550,
       speed: 300,
@@ -84,7 +84,7 @@ class Spaceship {
       assetPath: 'assets/images/ship_E.png',
       level: 3,
     ),
-    SpaceshipType.RaptorX: Spaceship(
+    SpaceshipType.raptorX: Spaceship(
       name: 'Raptor-X',
       cost: 700,
       speed: 350,
@@ -92,7 +92,7 @@ class Spaceship {
       assetPath: 'assets/images/ship_F.png',
       level: 3,
     ),
-    SpaceshipType.Albatross: Spaceship(
+    SpaceshipType.albatross: Spaceship(
       name: 'Albatross',
       cost: 850,
       speed: 400,
@@ -100,7 +100,7 @@ class Spaceship {
       assetPath: 'assets/images/ship_G.png',
       level: 4,
     ),
-    SpaceshipType.DK809: Spaceship(
+    SpaceshipType.dK809: Spaceship(
       name: 'DK-809',
       cost: 1000,
       speed: 450,
@@ -116,26 +116,26 @@ class Spaceship {
 @HiveType(typeId: 1)
 enum SpaceshipType {
   @HiveField(0)
-  Canary,
+  canary,
 
   @HiveField(1)
-  Dusky,
+  dusky,
 
   @HiveField(2)
-  Condor,
+  condor,
 
   @HiveField(3)
-  CXC,
+  cXC,
 
   @HiveField(4)
-  Raptor,
+  raptor,
 
   @HiveField(5)
-  RaptorX,
+  raptorX,
 
   @HiveField(6)
-  Albatross,
+  albatross,
 
   @HiveField(7)
-  DK809,
+  dK809,
 }

@@ -28,7 +28,7 @@ class Enemy extends SpriteComponent
   late Timer _freezeTimer;
 
   // Holds an object of Random class to generate random numbers.
-  Random _random = Random();
+  final _random = Random();
 
   // The data required to create this enemy.
   final EnemyData enemyData;
@@ -37,10 +37,10 @@ class Enemy extends SpriteComponent
   int _hitPoints = 10;
 
   // To display health in game world.
-  TextComponent _hpText = TextComponent(
+  final _hpText = TextComponent(
     text: '10 HP',
     textRenderer: TextPaint(
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.white,
         fontSize: 12,
         fontFamily: 'BungeeInline',
@@ -96,7 +96,7 @@ class Enemy extends SpriteComponent
     // the smallest dimension of this components size.
     final shape = CircleHitbox.relative(
       0.8,
-      parentSize: this.size,
+      parentSize: size,
       position: size / 2,
       anchor: Anchor.center,
     );
@@ -135,7 +135,7 @@ class Enemy extends SpriteComponent
       audioPlayer.playSfx('laser1.ogg');
     }));
 
-    this.removeFromParent();
+    removeFromParent();
 
     // Before dying, register a command to increase
     // player's score by 1.
@@ -155,7 +155,7 @@ class Enemy extends SpriteComponent
         generator: (i) => AcceleratedParticle(
           acceleration: getRandomVector(),
           speed: getRandomVector(),
-          position: this.position.clone(),
+          position: position.clone(),
           child: CircleParticle(
             radius: 2,
             paint: Paint()..color = Colors.white,
@@ -183,13 +183,13 @@ class Enemy extends SpriteComponent
     _freezeTimer.update(dt);
 
     // Update the position of this enemy using its speed and delta time.
-    this.position += moveDirection * _speed * dt;
+    position += moveDirection * _speed * dt;
 
     // If the enemy leaves the screen, destroy it.
-    if (this.position.y > gameRef.size.y) {
+    if (position.y > gameRef.size.y) {
       removeFromParent();
-    } else if ((this.position.x < this.size.x / 2) ||
-        (this.position.x > (gameRef.size.x - size.x / 2))) {
+    } else if ((position.x < size.x / 2) ||
+        (position.x > (gameRef.size.x - size.x / 2))) {
       // Enemy is going outside vertical screen bounds, flip its x direction.
       moveDirection.x *= -1;
     }

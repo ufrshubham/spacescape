@@ -9,8 +9,8 @@ part 'player_data.g.dart';
 // might want to store for tracking player progress.
 @HiveType(typeId: 0)
 class PlayerData extends ChangeNotifier with HiveObjectMixin {
-  static const String PLAYER_DATA_BOX = 'PlayerDataBox';
-  static const String PLAYER_DATA_KEY = 'PlayerData';
+  static const String playerDataBox = 'PlayerDataBox';
+  static const String playerDataKey = 'PlayerData';
 
   // The spaceship type of player's current spaceship.
   @HiveField(0)
@@ -57,48 +57,48 @@ class PlayerData extends ChangeNotifier with HiveObjectMixin {
 
   /// Creates a new instance of [PlayerData] from given map.
   PlayerData.fromMap(Map<String, dynamic> map)
-      : this.spaceshipType = map['currentSpaceshipType'],
-        this.ownedSpaceships = map['ownedSpaceshipTypes']
+      : spaceshipType = map['currentSpaceshipType'],
+        ownedSpaceships = map['ownedSpaceshipTypes']
             .map((e) => e as SpaceshipType) // Map out each element.
             .cast<SpaceshipType>() // Cast each element to SpaceshipType.
             .toList(), // Convert to a List<SpaceshipType>.
-        this._highScore = map['highScore'],
-        this.money = map['money'];
+        _highScore = map['highScore'],
+        money = map['money'];
 
   // A default map which should be used for creating the
   // very first PlayerData instance when game is launched
   // for the first time.
   static Map<String, dynamic> defaultData = {
-    'currentSpaceshipType': SpaceshipType.Canary,
-    'ownedSpaceshipTypes': [SpaceshipType.Canary],
+    'currentSpaceshipType': SpaceshipType.canary,
+    'ownedSpaceshipTypes': [SpaceshipType.canary],
     'highScore': 0,
     'money': 0,
   };
 
   /// Returns true if given [SpaceshipType] is owned by player.
   bool isOwned(SpaceshipType spaceshipType) {
-    return this.ownedSpaceships.contains(spaceshipType);
+    return ownedSpaceships.contains(spaceshipType);
   }
 
   /// Returns true if player has enough money to by given [SpaceshipType].
   bool canBuy(SpaceshipType spaceshipType) {
-    return (this.money >= Spaceship.getSpaceshipByType(spaceshipType).cost);
+    return (money >= Spaceship.getSpaceshipByType(spaceshipType).cost);
   }
 
   /// Returns true if player's current spaceship type is same as given [SpaceshipType].
   bool isEquipped(SpaceshipType spaceshipType) {
-    return (this.spaceshipType == spaceshipType);
+    return (spaceshipType == spaceshipType);
   }
 
   /// Buys the given [SpaceshipType] if player has enough money and does not already own it.
   void buy(SpaceshipType spaceshipType) {
     if (canBuy(spaceshipType) && (!isOwned(spaceshipType))) {
-      this.money -= Spaceship.getSpaceshipByType(spaceshipType).cost;
-      this.ownedSpaceships.add(spaceshipType);
+      money -= Spaceship.getSpaceshipByType(spaceshipType).cost;
+      ownedSpaceships.add(spaceshipType);
       notifyListeners();
 
       // Saves player data to disk.
-      this.save();
+      save();
     }
   }
 
@@ -108,6 +108,6 @@ class PlayerData extends ChangeNotifier with HiveObjectMixin {
     notifyListeners();
 
     // Saves player data to disk.
-    this.save();
+    save();
   }
 }

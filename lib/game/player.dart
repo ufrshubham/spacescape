@@ -44,7 +44,7 @@ class Player extends SpriteComponent
   late Timer _powerUpTimer;
 
   // Holds an object of Random class to generate random numbers.
-  Random _random = Random();
+  final _random = Random();
 
   // This method generates a random vector such that
   // its x component lies between [-100 to 100] and
@@ -59,7 +59,7 @@ class Player extends SpriteComponent
     Sprite? sprite,
     Vector2? position,
     Vector2? size,
-  })  : this._spaceship = Spaceship.getSpaceshipByType(spaceshipType),
+  })  : _spaceship = Spaceship.getSpaceshipByType(spaceshipType),
         super(sprite: sprite, position: position, size: size) {
     // Sets power up timer to 4 seconds. After 4 seconds,
     // multiple bullet will get deactivated.
@@ -84,7 +84,7 @@ class Player extends SpriteComponent
     // the smallest dimension of this components size.
     final shape = CircleHitbox.relative(
       0.8,
-      parentSize: this.size,
+      parentSize: size,
       position: size / 2,
       anchor: Anchor.center,
     );
@@ -125,10 +125,10 @@ class Player extends SpriteComponent
     }
 
     // Clamp position of player such that the player sprite does not go outside the screen size.
-    this.position.clamp(
-          Vector2.zero() + this.size / 2,
-          gameRef.size - this.size / 2,
-        );
+    position.clamp(
+      Vector2.zero() + size / 2,
+      gameRef.size - size / 2,
+    );
 
     // Adds thruster particles.
     final particleComponent = ParticleSystemComponent(
@@ -138,7 +138,7 @@ class Player extends SpriteComponent
         generator: (i) => AcceleratedParticle(
           acceleration: getRandomVector(),
           speed: getRandomVector(),
-          position: (this.position.clone() + Vector2(0, this.size.y / 3)),
+          position: (position.clone() + Vector2(0, size.y / 3)),
           child: CircleParticle(
             radius: 1,
             paint: Paint()..color = Colors.white,
@@ -154,7 +154,7 @@ class Player extends SpriteComponent
     Bullet bullet = Bullet(
       sprite: gameRef.spriteSheet.getSpriteById(28),
       size: Vector2(64, 64),
-      position: this.position.clone(),
+      position: position.clone(),
       level: _spaceship.level,
     );
 
@@ -174,7 +174,7 @@ class Player extends SpriteComponent
         Bullet bullet = Bullet(
           sprite: gameRef.spriteSheet.getSpriteById(28),
           size: Vector2(64, 64),
-          position: this.position.clone(),
+          position: position.clone(),
           level: _spaceship.level,
         );
 
@@ -209,16 +209,16 @@ class Player extends SpriteComponent
   // while restarting and exiting the game.
   void reset() {
     _playerData.currentScore = 0;
-    this._health = 100;
-    this.position = gameRef.canvasSize / 2;
+    _health = 100;
+    position = gameRef.canvasSize / 2;
   }
 
   // Changes the current spaceship type with given spaceship type.
   // This method also takes care of updating the internal spaceship details
   // as well as the spaceship sprite.
   void setSpaceshipType(SpaceshipType spaceshipType) {
-    this.spaceshipType = spaceshipType;
-    this._spaceship = Spaceship.getSpaceshipByType(spaceshipType);
+    spaceshipType = spaceshipType;
+    _spaceship = Spaceship.getSpaceshipByType(spaceshipType);
     sprite = gameRef.spriteSheet.getSpriteById(_spaceship.spriteId);
   }
 

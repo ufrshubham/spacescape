@@ -6,7 +6,7 @@ import 'pause_button.dart';
 
 // This class represents the game over menu overlay.
 class GameOverMenu extends StatelessWidget {
-  static const String ID = 'GameOverMenu';
+  static const String id = 'GameOverMenu';
   final SpacescapeGame gameRef;
 
   const GameOverMenu({Key? key, required this.gameRef}) : super(key: key);
@@ -18,8 +18,8 @@ class GameOverMenu extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Pause menu title.
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 50.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 50.0),
             child: Text(
               'Game Over',
               style: TextStyle(
@@ -41,12 +41,12 @@ class GameOverMenu extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             child: ElevatedButton(
               onPressed: () {
-                gameRef.overlays.remove(GameOverMenu.ID);
-                gameRef.overlays.add(PauseButton.ID);
+                gameRef.overlays.remove(GameOverMenu.id);
+                gameRef.overlays.add(PauseButton.id);
                 gameRef.reset();
                 gameRef.resumeEngine();
               },
-              child: Text('Restart'),
+              child: const Text('Restart'),
             ),
           ),
 
@@ -55,7 +55,7 @@ class GameOverMenu extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             child: ElevatedButton(
               onPressed: () {
-                gameRef.overlays.remove(GameOverMenu.ID);
+                gameRef.overlays.remove(GameOverMenu.id);
                 gameRef.reset();
 
                 Navigator.of(context).pushReplacement(
@@ -64,7 +64,7 @@ class GameOverMenu extends StatelessWidget {
                   ),
                 );
               },
-              child: Text('Exit'),
+              child: const Text('Exit'),
             ),
           ),
         ],
