@@ -6,7 +6,7 @@ import 'enemy.dart';
 // This component represent a bullet in game world.
 class Bullet extends SpriteComponent with CollisionCallbacks {
   // Speed of the bullet.
-  double _speed = 450;
+  final double _speed = 450;
 
   // Controls the direction in which bullet travels.
   Vector2 direction = Vector2(0, -1);
@@ -30,7 +30,7 @@ class Bullet extends SpriteComponent with CollisionCallbacks {
     //  the smallest dimension of this components size.
     final shape = CircleHitbox.relative(
       0.4,
-      parentSize: this.size,
+      parentSize: size,
       position: size / 2,
       anchor: Anchor.center,
     );
@@ -43,7 +43,7 @@ class Bullet extends SpriteComponent with CollisionCallbacks {
 
     // If the other Collidable is Enemy, remove this bullet.
     if (other is Enemy) {
-      this.removeFromParent();
+      removeFromParent();
     }
   }
 
@@ -52,11 +52,11 @@ class Bullet extends SpriteComponent with CollisionCallbacks {
     super.update(dt);
 
     // Moves the bullet to a new position with _speed and direction.
-    this.position += direction * this._speed * dt;
+    position += direction * _speed * dt;
 
     // If bullet crosses the upper boundary of screen
     // mark it to be removed it from the game world.
-    if (this.position.y < 0) {
+    if (position.y < 0) {
       removeFromParent();
     }
   }

@@ -28,17 +28,17 @@ class GamePlay extends StatelessWidget {
         child: GameWidget(
           game: _spacescapeGame,
           // Initially only pause button overlay will be visible.
-          initialActiveOverlays: [PauseButton.ID],
+          initialActiveOverlays: const [PauseButton.id],
           overlayBuilderMap: {
-            PauseButton.ID: (BuildContext context, SpacescapeGame gameRef) =>
+            PauseButton.id: (BuildContext context, SpacescapeGame gameRef) =>
                 PauseButton(
                   gameRef: gameRef,
                 ),
-            PauseMenu.ID: (BuildContext context, SpacescapeGame gameRef) =>
+            PauseMenu.id: (BuildContext context, SpacescapeGame gameRef) =>
                 PauseMenu(
                   gameRef: gameRef,
                 ),
-            GameOverMenu.ID: (BuildContext context, SpacescapeGame gameRef) =>
+            GameOverMenu.id: (BuildContext context, SpacescapeGame gameRef) =>
                 GameOverMenu(
                   gameRef: gameRef,
                 ),

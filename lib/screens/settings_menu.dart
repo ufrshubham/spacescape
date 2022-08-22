@@ -14,8 +14,8 @@ class SettingsMenu extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Game title.
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 50.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 50.0),
               child: Text(
                 'Settings',
                 style: TextStyle(
@@ -37,7 +37,7 @@ class SettingsMenu extends StatelessWidget {
               selector: (context, settings) => settings.soundEffects,
               builder: (context, value, child) {
                 return SwitchListTile(
-                  title: Text('Sound Effects'),
+                  title: const Text('Sound Effects'),
                   value: value,
                   onChanged: (newValue) {
                     Provider.of<Settings>(context, listen: false).soundEffects =
@@ -52,7 +52,7 @@ class SettingsMenu extends StatelessWidget {
               selector: (context, settings) => settings.backgroundMusic,
               builder: (context, value, child) {
                 return SwitchListTile(
-                  title: Text('Background Music'),
+                  title: const Text('Background Music'),
                   value: value,
                   onChanged: (newValue) {
                     Provider.of<Settings>(context, listen: false)
@@ -69,7 +69,7 @@ class SettingsMenu extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Icon(Icons.arrow_back),
+                child: const Icon(Icons.arrow_back),
               ),
             ),
           ],

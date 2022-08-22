@@ -16,8 +16,8 @@ class MainMenu extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Game title.
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 50.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 50.0),
               child: Text(
                 'Spacescape',
                 style: TextStyle(
@@ -47,7 +47,7 @@ class MainMenu extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text('Play'),
+                child: const Text('Play'),
               ),
             ),
 
@@ -62,7 +62,7 @@ class MainMenu extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text('Settings'),
+                child: const Text('Settings'),
               ),
             ),
           ],

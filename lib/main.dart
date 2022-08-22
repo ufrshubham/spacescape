@@ -1,8 +1,7 @@
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'models/settings.dart';
 import 'screens/main_menu.dart';
@@ -68,8 +67,7 @@ Future<void> main() async {
 // documents directory and also registers
 // all the hive adapters.
 Future<void> initHive() async {
-  final dir = await getApplicationDocumentsDirectory();
-  Hive.init(dir.path);
+  await Hive.initFlutter();
 
   Hive.registerAdapter(PlayerDataAdapter());
   Hive.registerAdapter(SpaceshipTypeAdapter());
@@ -79,35 +77,35 @@ Future<void> initHive() async {
 /// This function reads the stored [PlayerData] from disk.
 Future<PlayerData> getPlayerData() async {
   // Open the player data box and read player data from it.
-  final box = await Hive.openBox<PlayerData>(PlayerData.PLAYER_DATA_BOX);
-  final playerData = box.get(PlayerData.PLAYER_DATA_KEY);
+  final box = await Hive.openBox<PlayerData>(PlayerData.playerDataBox);
+  final playerData = box.get(PlayerData.playerDataKey);
 
   // If player data is null, it means this is a fresh launch
   // of the game. In such case, we first store the default
   // player data in the player data box and then return the same.
   if (playerData == null) {
     box.put(
-      PlayerData.PLAYER_DATA_KEY,
+      PlayerData.playerDataKey,
       PlayerData.fromMap(PlayerData.defaultData),
     );
   }
 
-  return box.get(PlayerData.PLAYER_DATA_KEY)!;
+  return box.get(PlayerData.playerDataKey)!;
 }
 
 /// This function reads the stored [Settings] from disk.
 Future<Settings> getSettings() async {
   // Open the settings box and read settings from it.
-  final box = await Hive.openBox<Settings>(Settings.SETTINGS_BOX);
-  final settings = box.get(Settings.SETTINGS_KEY);
+  final box = await Hive.openBox<Settings>(Settings.settingsBox);
+  final settings = box.get(Settings.settingsKey);
 
   // If settings is null, it means this is a fresh launch
   // of the game. In such case, we first store the default
   // settings in the settings box and then return the same.
   if (settings == null) {
-    box.put(Settings.SETTINGS_KEY,
+    box.put(Settings.settingsKey,
         Settings(soundEffects: true, backgroundMusic: true));
   }
 
-  return box.get(Settings.SETTINGS_KEY)!;
+  return box.get(Settings.settingsKey)!;
 }

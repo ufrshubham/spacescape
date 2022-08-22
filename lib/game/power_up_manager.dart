@@ -6,8 +6,11 @@ import 'game.dart';
 import 'power_ups.dart';
 import 'knows_game_size.dart';
 
+typedef PowerUpMap
+    = Map<PowerUpTypes, PowerUp Function(Vector2 position, Vector2 size)>;
+
 // Represents the types of power up we have to offer.
-enum PowerUpTypes { Health, Freeze, Nuke, MultiFire }
+enum PowerUpTypes { health, freeze, nuke, multiFire }
 
 // This class/component is responsible for spawning random power ups
 // at random locations in the game world.
@@ -31,21 +34,20 @@ class PowerUpManager extends Component
   static late Sprite multiFireSprite;
 
   // A private static map which stores a generator function for each power up.
-  static Map<PowerUpTypes, PowerUp Function(Vector2 position, Vector2 size)>
-      _powerUpMap = {
-    PowerUpTypes.Health: (position, size) => Health(
+  static final PowerUpMap _powerUpMap = {
+    PowerUpTypes.health: (position, size) => Health(
           position: position,
           size: size,
         ),
-    PowerUpTypes.Freeze: (position, size) => Freeze(
+    PowerUpTypes.freeze: (position, size) => Freeze(
           position: position,
           size: size,
         ),
-    PowerUpTypes.Nuke: (position, size) => Nuke(
+    PowerUpTypes.nuke: (position, size) => Nuke(
           position: position,
           size: size,
         ),
-    PowerUpTypes.MultiFire: (position, size) => MultiFire(
+    PowerUpTypes.multiFire: (position, size) => MultiFire(
           position: position,
           size: size,
         ),

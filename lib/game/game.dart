@@ -77,16 +77,13 @@ class SpacescapeGame extends FlameGame
       _audioPlayerComponent = AudioPlayerComponent();
       add(_audioPlayerComponent);
 
-      ParallaxComponent _stars = await ParallaxComponent.load(
-        [
-          ParallaxImageData('stars1.png'),
-          ParallaxImageData('stars2.png'),
-        ],
+      final stars = await ParallaxComponent.load(
+        [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
         repeat: ImageRepeat.repeat,
         baseVelocity: Vector2(0, -50),
         velocityMultiplierDelta: Vector2(0, 1.5),
       );
-      add(_stars);
+      add(stars);
 
       spriteSheet = SpriteSheet.fromColumnsAndRows(
         image: images.fromCache('simpleSpace_tilesheet@2.png'),
@@ -110,7 +107,7 @@ class SpacescapeGame extends FlameGame
       /// As build context is not valid in onLoad() method, we
       /// cannot get current [PlayerData] here. So initilize player
       /// with the default SpaceshipType.Canary.
-      final spaceshipType = SpaceshipType.Canary;
+      const spaceshipType = SpaceshipType.canary;
       final spaceship = Spaceship.getSpaceshipByType(spaceshipType);
 
       _player = Player(
@@ -148,7 +145,7 @@ class SpacescapeGame extends FlameGame
         text: 'Score: 0',
         position: Vector2(10, 10),
         textRenderer: TextPaint(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 12,
             fontFamily: 'BungeeInline',
@@ -167,7 +164,7 @@ class SpacescapeGame extends FlameGame
         text: 'Health: 100%',
         position: Vector2(size.x - 10, 10),
         textRenderer: TextPaint(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 12,
             fontFamily: 'BungeeInline',
@@ -223,7 +220,7 @@ class SpacescapeGame extends FlameGame
   //   // If the component being prepared is of type KnowsGameSize,
   //   // call onResize() on it so that it stores the current game screen size.
   //   if (c is KnowsGameSize) {
-  //     c.onResize(this.size);
+  //     c.onResize(size);
   //   }
   // }
 
@@ -232,8 +229,8 @@ class SpacescapeGame extends FlameGame
   //   super.onResize(canvasSize);
 
   //   // Loop over all the components of type KnowsGameSize and resize then as well.
-  //   this.children.whereType<KnowsGameSize>().forEach((component) {
-  //     component.onResize(this.size);
+  //   children.whereType<KnowsGameSize>().forEach((component) {
+  //     component.onResize(size);
   //   });
   // }
   // ===================================
@@ -246,11 +243,11 @@ class SpacescapeGame extends FlameGame
     // component from components list. The run()
     // method of Command is no-op if the command is
     // not valid for given component.
-    _commandList.forEach((command) {
-      children.forEach((component) {
+    for (var command in _commandList) {
+      for (var component in children) {
         command.run(component);
-      });
-    });
+      }
+    }
 
     // Remove all the commands that are processed and
     // add all new commands to be processed in next update.
@@ -265,9 +262,9 @@ class SpacescapeGame extends FlameGame
     /// Display [GameOverMenu] when [Player.health] becomes
     /// zero and camera stops shaking.
     if (_player.health <= 0 && (!camera.shaking)) {
-      this.pauseEngine();
-      this.overlays.remove(PauseButton.ID);
-      this.overlays.add(GameOverMenu.ID);
+      pauseEngine();
+      overlays.remove(PauseButton.id);
+      overlays.add(GameOverMenu.id);
     }
   }
 
@@ -292,10 +289,10 @@ class SpacescapeGame extends FlameGame
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        if (this._player.health > 0) {
-          this.pauseEngine();
-          this.overlays.remove(PauseButton.ID);
-          this.overlays.add(PauseMenu.ID);
+        if (_player.health > 0) {
+          pauseEngine();
+          overlays.remove(PauseButton.id);
+          overlays.add(PauseMenu.id);
         }
         break;
     }
