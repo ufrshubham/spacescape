@@ -25,7 +25,11 @@ import 'audio_player_component.dart';
 
 // This class is responsible for initializing and running the game-loop.
 class SpacescapeGame extends FlameGame
-    with HasDraggables, HasTappables, HasCollisionDetection {
+    with
+        HasDraggables,
+        HasTappables,
+        HasCollisionDetection,
+        HasKeyboardHandlerComponents {
   // Stores a reference to player component.
   late Player _player;
 
