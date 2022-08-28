@@ -3,7 +3,6 @@ import 'package:flame/input.dart';
 import 'package:flame/parallax.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +14,7 @@ import '../models/player_data.dart';
 import '../models/spaceship_details.dart';
 
 import 'enemy.dart';
+import 'health_bar.dart';
 import 'player.dart';
 import 'bullet.dart';
 import 'command.dart';
@@ -63,6 +63,9 @@ class SpacescapeGame extends FlameGame
   // Assets loading and adding component should be done here.
   @override
   Future<void> onLoad() async {
+    // Makes the game use a fixed resolution irrespective of the windows size.
+    camera.viewport = FixedResolutionViewport(Vector2(540, 960));
+
     // Initilize the game world only one time.
     if (!_isAlreadyLoaded) {
       // Loads and caches all the images for later use.
@@ -182,6 +185,15 @@ class SpacescapeGame extends FlameGame
 
       add(_playerHealth);
 
+      // Add the blue bar indicating health.
+      add(
+        HealthBar(
+          player: _player,
+          position: _playerHealth.positionOfAnchor(Anchor.topLeft),
+          priority: -1,
+        ),
+      );
+
       // Set this to true so that we do not initilize
       // everything again in the same session.
       _isAlreadyLoaded = true;
@@ -266,17 +278,6 @@ class SpacescapeGame extends FlameGame
       overlays.remove(PauseButton.id);
       overlays.add(GameOverMenu.id);
     }
-  }
-
-  @override
-  void render(Canvas canvas) {
-    // Draws a rectangular health bar at top right corner.
-    canvas.drawRect(
-      Rect.fromLTWH(size.x - 110, 10, _player.health.toDouble(), 20),
-      Paint()..color = Colors.blue,
-    );
-
-    super.render(canvas);
   }
 
   // This method handles state of app and pauses
