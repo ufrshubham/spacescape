@@ -87,7 +87,7 @@ class PlayerData extends ChangeNotifier with HiveObjectMixin {
 
   /// Returns true if player's current spaceship type is same as given [SpaceshipType].
   bool isEquipped(SpaceshipType spaceshipType) {
-    return (spaceshipType == spaceshipType);
+    return (this.spaceshipType == spaceshipType);
   }
 
   /// Buys the given [SpaceshipType] if player has enough money and does not already own it.
