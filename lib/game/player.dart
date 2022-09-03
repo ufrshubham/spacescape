@@ -73,14 +73,6 @@ class Player extends SpriteComponent
     });
   }
 
-  // Fill _playerData with defaultData to make sure a null exception is not thrown.
-  // game.dart -> update() -> _playerScore.text = 'Score: ${_player.score}';
-  @override
-  Future<void>? onLoad() {
-    _playerData = PlayerData.fromMap(PlayerData.defaultData);
-    return super.onLoad();
-  }
-
   @override
   void onMount() {
     super.onMount();
