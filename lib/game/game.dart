@@ -267,16 +267,18 @@ class SpacescapeGame extends FlameGame
     _commandList.addAll(_addLaterCommandList);
     _addLaterCommandList.clear();
 
-    // Update score and health components with latest values.
-    _playerScore.text = 'Score: ${_player.score}';
-    _playerHealth.text = 'Health: ${_player.health}%';
+    if (_player.isMounted) {
+      // Update score and health components with latest values.
+      _playerScore.text = 'Score: ${_player.score}';
+      _playerHealth.text = 'Health: ${_player.health}%';
 
-    /// Display [GameOverMenu] when [Player.health] becomes
-    /// zero and camera stops shaking.
-    if (_player.health <= 0 && (!camera.shaking)) {
-      pauseEngine();
-      overlays.remove(PauseButton.id);
-      overlays.add(GameOverMenu.id);
+      /// Display [GameOverMenu] when [Player.health] becomes
+      /// zero and camera stops shaking.
+      if (_player.health <= 0 && (!camera.shaking)) {
+        pauseEngine();
+        overlays.remove(PauseButton.id);
+        overlays.add(GameOverMenu.id);
+      }
     }
   }
 
