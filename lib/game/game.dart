@@ -118,7 +118,7 @@ class SpacescapeGame extends FlameGame
         spaceshipType: spaceshipType,
         sprite: spriteSheet.getSpriteById(spaceship.spriteId),
         size: Vector2(64, 64),
-        position: canvasSize / 2,
+        position: size / 2,
       );
 
       // Makes sure that the sprite is centered.

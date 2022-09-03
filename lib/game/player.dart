@@ -252,7 +252,7 @@ class Player extends SpriteComponent
   void reset() {
     _playerData.currentScore = 0;
     _health = 100;
-    position = gameRef.canvasSize / 2;
+    position = gameRef.size / 2;
   }
 
   // Changes the current spaceship type with given spaceship type.
