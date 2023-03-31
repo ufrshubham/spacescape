@@ -57,6 +57,7 @@ class GameOverMenu extends StatelessWidget {
               onPressed: () {
                 gameRef.overlays.remove(GameOverMenu.id);
                 gameRef.reset();
+                gameRef.resumeEngine();
 
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
