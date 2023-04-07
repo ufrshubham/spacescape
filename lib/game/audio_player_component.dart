@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame/experimental.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:provider/provider.dart';
 
@@ -6,7 +7,8 @@ import 'game.dart';
 
 import '../models/settings.dart';
 
-class AudioPlayerComponent extends Component with HasGameRef<SpacescapeGame> {
+class AudioPlayerComponent extends Component
+    with HasGameReference<SpacescapeGame> {
   @override
   Future<void>? onLoad() async {
     FlameAudio.bgm.initialize();
@@ -31,8 +33,8 @@ class AudioPlayerComponent extends Component with HasGameRef<SpacescapeGame> {
   void playBgm(String filename) {
     if (!FlameAudio.audioCache.loadedFiles.containsKey(filename)) return;
 
-    if (gameRef.buildContext != null) {
-      if (Provider.of<Settings>(gameRef.buildContext!, listen: false)
+    if (game.buildContext != null) {
+      if (Provider.of<Settings>(game.buildContext!, listen: false)
           .backgroundMusic) {
         FlameAudio.bgm.play(filename);
       }
@@ -40,8 +42,8 @@ class AudioPlayerComponent extends Component with HasGameRef<SpacescapeGame> {
   }
 
   void playSfx(String filename) {
-    if (gameRef.buildContext != null) {
-      if (Provider.of<Settings>(gameRef.buildContext!, listen: false)
+    if (game.buildContext != null) {
+      if (Provider.of<Settings>(game.buildContext!, listen: false)
           .soundEffects) {
         FlameAudio.play(filename);
       }

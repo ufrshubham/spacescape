@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/collisions.dart';
+import 'package:flame/experimental.dart';
 import 'package:flame/particles.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +10,13 @@ import 'game.dart';
 import 'bullet.dart';
 import 'player.dart';
 import 'command.dart';
-import 'knows_game_size.dart';
 import 'audio_player_component.dart';
 
 import '../models/enemy_data.dart';
 
 // This class represent an enemy component.
 class Enemy extends SpriteComponent
-    with KnowsGameSize, CollisionCallbacks, HasGameRef<SpacescapeGame> {
+    with CollisionCallbacks, HasGameReference<SpacescapeGame> {
   // The speed of this enemy.
   double _speed = 250;
 
@@ -131,7 +131,7 @@ class Enemy extends SpriteComponent
   // This method will destory this enemy.
   void destroy() {
     // Ask audio player to play enemy destroy effect.
-    gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+    game.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
       audioPlayer.playSfx('laser1.ogg');
     }));
 
@@ -143,7 +143,7 @@ class Enemy extends SpriteComponent
       // Use the correct killPoint to increase player's score.
       player.addToScore(enemyData.killPoint);
     });
-    gameRef.addCommand(command);
+    game.addCommand(command);
 
     // Generate 20 white circle particles with random speed and acceleration,
     // at current position of this enemy. Each particles lives for exactly
@@ -164,7 +164,7 @@ class Enemy extends SpriteComponent
       ),
     );
 
-    gameRef.add(particleComponent);
+    game.world.add(particleComponent);
   }
 
   @override
@@ -186,10 +186,10 @@ class Enemy extends SpriteComponent
     position += moveDirection * _speed * dt;
 
     // If the enemy leaves the screen, destroy it.
-    if (position.y > gameRef.size.y) {
+    if (position.y > game.fixedResolution.y) {
       removeFromParent();
     } else if ((position.x < size.x / 2) ||
-        (position.x > (gameRef.size.x - size.x / 2))) {
+        (position.x > (game.fixedResolution.x - size.x / 2))) {
       // Enemy is going outside vertical screen bounds, flip its x direction.
       moveDirection.x *= -1;
     }

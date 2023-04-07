@@ -1,8 +1,11 @@
 import 'dart:math';
 
 import 'package:flame/collisions.dart';
+// import 'package:flame/effects.dart';
+import 'package:flame/experimental.dart';
 import 'package:flame/particles.dart';
 import 'package:flame/components.dart';
+// import 'package:flame_noise/flame_noise.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -14,16 +17,11 @@ import 'game.dart';
 import 'enemy.dart';
 import 'bullet.dart';
 import 'command.dart';
-import 'knows_game_size.dart';
 import 'audio_player_component.dart';
 
 // This component class represents the player character in game.
 class Player extends SpriteComponent
-    with
-        KnowsGameSize,
-        CollisionCallbacks,
-        HasGameRef<SpacescapeGame>,
-        KeyboardHandler {
+    with CollisionCallbacks, HasGameReference<SpacescapeGame>, KeyboardHandler {
   // Player joystick
   JoystickComponent joystick;
 
@@ -87,7 +85,7 @@ class Player extends SpriteComponent
     );
     add(shape);
 
-    _playerData = Provider.of<PlayerData>(gameRef.buildContext!, listen: false);
+    _playerData = Provider.of<PlayerData>(game.buildContext!, listen: false);
   }
 
   @override
@@ -97,7 +95,13 @@ class Player extends SpriteComponent
     // If other entity is an Enemy, reduce player's health by 10.
     if (other is Enemy) {
       // Make the camera shake, with custom intensity.
-      gameRef.camera.shake(intensity: 20);
+      // TODO: Investigate how camera shake should be implemented in new camera system.
+      // game.primaryCamera.viewfinder.add(
+      //   MoveByEffect(
+      //     Vector2.all(10),
+      //     PerlinNoiseEffectController(duration: 1),
+      //   ),
+      // );
 
       _health -= 10;
       if (_health <= 0) {
@@ -169,7 +173,7 @@ class Player extends SpriteComponent
     // Clamp position of player such that the player sprite does not go outside the screen size.
     position.clamp(
       Vector2.zero() + size / 2,
-      gameRef.size - size / 2,
+      game.fixedResolution - size / 2,
     );
 
     // Adds thruster particles.
@@ -189,12 +193,12 @@ class Player extends SpriteComponent
       ),
     );
 
-    gameRef.add(particleComponent);
+    game.world.add(particleComponent);
   }
 
   void joystickAction() {
     Bullet bullet = Bullet(
-      sprite: gameRef.spriteSheet.getSpriteById(28),
+      sprite: game.spriteSheet.getSpriteById(28),
       size: Vector2(64, 64),
       position: position.clone(),
       level: _spaceship.level,
@@ -202,10 +206,10 @@ class Player extends SpriteComponent
 
     // Anchor it to center and add to game world.
     bullet.anchor = Anchor.center;
-    gameRef.add(bullet);
+    game.world.add(bullet);
 
     // Ask audio player to play bullet fire effect.
-    gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+    game.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
       audioPlayer.playSfx('laserSmall_001.ogg');
     }));
 
@@ -214,7 +218,7 @@ class Player extends SpriteComponent
     if (_shootMultipleBullets) {
       for (int i = -1; i < 2; i += 2) {
         Bullet bullet = Bullet(
-          sprite: gameRef.spriteSheet.getSpriteById(28),
+          sprite: game.spriteSheet.getSpriteById(28),
           size: Vector2(64, 64),
           position: position.clone(),
           level: _spaceship.level,
@@ -223,7 +227,7 @@ class Player extends SpriteComponent
         // Anchor it to center and add to game world.
         bullet.anchor = Anchor.center;
         bullet.direction.rotate(i * pi / 6);
-        gameRef.add(bullet);
+        game.world.add(bullet);
       }
     }
   }
@@ -252,7 +256,7 @@ class Player extends SpriteComponent
   void reset() {
     _playerData.currentScore = 0;
     _health = 100;
-    position = gameRef.size / 2;
+    position = game.fixedResolution / 2;
   }
 
   // Changes the current spaceship type with given spaceship type.
@@ -261,7 +265,7 @@ class Player extends SpriteComponent
   void setSpaceshipType(SpaceshipType spaceshipType) {
     spaceshipType = spaceshipType;
     _spaceship = Spaceship.getSpaceshipByType(spaceshipType);
-    sprite = gameRef.spriteSheet.getSpriteById(_spaceship.spriteId);
+    sprite = game.spriteSheet.getSpriteById(_spaceship.spriteId);
   }
 
   // Allows player to first multiple bullets for 4 seconds when called.

@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
+import 'package:flame/experimental.dart';
 
 import 'game.dart';
 import 'power_ups.dart';
-import 'knows_game_size.dart';
 
 typedef PowerUpMap
     = Map<PowerUpTypes, PowerUp Function(Vector2 position, Vector2 size)>;
@@ -14,8 +14,7 @@ enum PowerUpTypes { health, freeze, nuke, multiFire }
 
 // This class/component is responsible for spawning random power ups
 // at random locations in the game world.
-class PowerUpManager extends Component
-    with KnowsGameSize, HasGameRef<SpacescapeGame> {
+class PowerUpManager extends Component with HasGameReference<SpacescapeGame> {
   // Controls the frequency of spawning power ups.
   late Timer _spawnTimer;
 
@@ -69,15 +68,15 @@ class PowerUpManager extends Component
   void _spawnPowerUp() {
     Vector2 initialSize = Vector2(64, 64);
     Vector2 position = Vector2(
-      random.nextDouble() * gameRef.size.x,
-      random.nextDouble() * gameRef.size.y,
+      random.nextDouble() * game.fixedResolution.x,
+      random.nextDouble() * game.fixedResolution.y,
     );
 
     // Clamp so that the power up does not
     // go outside the screen.
     position.clamp(
       Vector2.zero() + initialSize / 2,
-      gameRef.size - initialSize / 2,
+      game.fixedResolution - initialSize / 2,
     );
 
     // Returns a random integer from 0 to (PowerUpTypes.values.length - 1).
@@ -94,7 +93,7 @@ class PowerUpManager extends Component
 
     // If power up is valid, add it to game world.
     if (powerUp != null) {
-      gameRef.add(powerUp);
+      game.world.add(powerUp);
     }
   }
 
@@ -103,10 +102,10 @@ class PowerUpManager extends Component
     // Start the spawn timer as soon as this component is mounted.
     _spawnTimer.start();
 
-    healthSprite = Sprite(gameRef.images.fromCache('icon_plusSmall.png'));
-    nukeSprite = Sprite(gameRef.images.fromCache('nuke.png'));
-    freezeSprite = Sprite(gameRef.images.fromCache('freeze.png'));
-    multiFireSprite = Sprite(gameRef.images.fromCache('multi_fire.png'));
+    healthSprite = Sprite(game.images.fromCache('icon_plusSmall.png'));
+    nukeSprite = Sprite(game.images.fromCache('nuke.png'));
+    freezeSprite = Sprite(game.images.fromCache('freeze.png'));
+    multiFireSprite = Sprite(game.images.fromCache('multi_fire.png'));
 
     super.onMount();
   }

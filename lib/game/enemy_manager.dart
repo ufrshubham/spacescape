@@ -1,21 +1,20 @@
 import 'dart:math';
 
+import 'package:flame/experimental.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame/components.dart';
 import 'package:provider/provider.dart';
 
 import 'game.dart';
 import 'enemy.dart';
-import 'knows_game_size.dart';
 
 import '../models/enemy_data.dart';
 import '../models/player_data.dart';
 
 // This component class takes care of spawning new enemy components
-// randomly from top of the screen. It uses the HasGameRef mixin so that
+// randomly from top of the screen. It uses the HasGameReference mixin so that
 // it can add child components.
-class EnemyManager extends Component
-    with KnowsGameSize, HasGameRef<SpacescapeGame> {
+class EnemyManager extends Component with HasGameReference<SpacescapeGame> {
   // The timer which runs the enemy spawner code at regular interval of time.
   late Timer _timer;
 
@@ -43,21 +42,21 @@ class EnemyManager extends Component
     Vector2 initialSize = Vector2(64, 64);
 
     // random.nextDouble() generates a random number between 0 and 1.
-    // Multiplying it by gameRef.size.x makes sure that the value remains between 0 and width of screen.
-    Vector2 position = Vector2(random.nextDouble() * gameRef.size.x, 0);
+    // Multiplying it by game.fixedResolution.x makes sure that the value remains between 0 and width of screen.
+    Vector2 position = Vector2(random.nextDouble() * game.fixedResolution.x, 0);
 
     // Clamps the vector such that the enemy sprite remains within the screen.
     position.clamp(
       Vector2.zero() + initialSize / 2,
-      gameRef.size - initialSize / 2,
+      game.fixedResolution - initialSize / 2,
     );
 
     // Make sure that we have a valid BuildContext before using it.
-    if (gameRef.buildContext != null) {
+    if (game.buildContext != null) {
       // Get current score and figure out the max level of enemy that
       // can be spawned for this score.
       int currentScore =
-          Provider.of<PlayerData>(gameRef.buildContext!, listen: false)
+          Provider.of<PlayerData>(game.buildContext!, listen: false)
               .currentScore;
       int maxLevel = mapScoreToMaxEnemyLevel(currentScore);
 
@@ -76,7 +75,7 @@ class EnemyManager extends Component
 
       // Add it to components list of game instance, instead of EnemyManager.
       // This ensures the collision detection working correctly.
-      gameRef.add(enemy);
+      game.world.add(enemy);
     }
   }
 

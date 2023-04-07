@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/experimental.dart';
 
 import 'game.dart';
 import 'enemy.dart';
@@ -12,7 +13,7 @@ import 'audio_player_component.dart';
 // An abstract class which represents power ups in this game.
 /// See [Freeze], [Health], [MultiFire] and [Nuke] for example.
 abstract class PowerUp extends SpriteComponent
-    with HasGameRef<SpacescapeGame>, CollisionCallbacks {
+    with HasGameReference<SpacescapeGame>, CollisionCallbacks {
   // Controls how long the power up should be visible
   // before getting destroyed if not picked.
   late Timer _timer;
@@ -66,7 +67,7 @@ abstract class PowerUp extends SpriteComponent
     // onActivated method and mark this component to be removed.
     if (other is Player) {
       // Ask audio player to play power up activation effect.
-      gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+      game.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
         audioPlayer.playSfx('powerUp6.ogg');
       }));
       onActivated();
@@ -93,7 +94,7 @@ class Nuke extends PowerUp {
     final command = Command<Enemy>(action: (enemy) {
       enemy.destroy();
     });
-    gameRef.addCommand(command);
+    game.addCommand(command);
   }
 }
 
@@ -113,7 +114,7 @@ class Health extends PowerUp {
     final command = Command<Player>(action: (player) {
       player.increaseHealthBy(10);
     });
-    gameRef.addCommand(command);
+    game.addCommand(command);
   }
 }
 
@@ -133,19 +134,19 @@ class Freeze extends PowerUp {
     final command1 = Command<Enemy>(action: (enemy) {
       enemy.freeze();
     });
-    gameRef.addCommand(command1);
+    game.addCommand(command1);
 
     /// Register a command to freeze [EnemyManager].
     final command2 = Command<EnemyManager>(action: (enemyManager) {
       enemyManager.freeze();
     });
-    gameRef.addCommand(command2);
+    game.addCommand(command2);
 
     /// Register a command to freeze [PowerUpManager].
     final command3 = Command<PowerUpManager>(action: (powerUpManager) {
       powerUpManager.freeze();
     });
-    gameRef.addCommand(command3);
+    game.addCommand(command3);
   }
 }
 
@@ -165,6 +166,6 @@ class MultiFire extends PowerUp {
     final command = Command<Player>(action: (player) {
       player.shootMultipleBullets();
     });
-    gameRef.addCommand(command);
+    game.addCommand(command);
   }
 }
