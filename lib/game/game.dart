@@ -1,4 +1,3 @@
-import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/parallax.dart';
@@ -85,23 +84,7 @@ class SpacescapeGame extends FlameGame
         rows: 6,
       );
 
-      primaryCamera = CameraComponent.withFixedResolution(
-        world: world,
-        width: fixedResolution.x,
-        height: fixedResolution.y,
-      )..viewfinder.position = fixedResolution / 2;
-
       await add(world);
-      await add(primaryCamera);
-
-      _audioPlayerComponent = AudioPlayerComponent();
-      final stars = await ParallaxComponent.load(
-        [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
-        repeat: ImageRepeat.repeat,
-        baseVelocity: Vector2(0, -50),
-        velocityMultiplierDelta: Vector2(0, 1.5),
-        size: fixedResolution,
-      );
 
       // Create a basic joystick component on left.
       final joystick = JoystickComponent(
@@ -113,6 +96,23 @@ class SpacescapeGame extends FlameGame
           paint: Paint()..color = Colors.white.withOpacity(0.5),
         ),
         knob: CircleComponent(radius: 30),
+      );
+
+      primaryCamera = CameraComponent.withFixedResolution(
+        world: world,
+        width: fixedResolution.x,
+        height: fixedResolution.y,
+        hudComponents: [joystick],
+      )..viewfinder.position = fixedResolution / 2;
+      await add(primaryCamera);
+
+      _audioPlayerComponent = AudioPlayerComponent();
+      final stars = await ParallaxComponent.load(
+        [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
+        repeat: ImageRepeat.repeat,
+        baseVelocity: Vector2(0, -50),
+        velocityMultiplierDelta: Vector2(0, 1.5),
+        size: fixedResolution,
       );
 
       /// As build context is not valid in onLoad() method, we
@@ -159,10 +159,6 @@ class SpacescapeGame extends FlameGame
         ),
       );
 
-      // Setting positionType to viewport makes sure that this component
-      // does not get affected by camera's transformations.
-      _playerScore.positionType = PositionType.viewport;
-
       // Create text component for player health.
       _playerHealth = TextComponent(
         text: 'Health: 100%',
@@ -180,10 +176,6 @@ class SpacescapeGame extends FlameGame
       // corner of this component to be at a specific position.
       _playerHealth.anchor = Anchor.topRight;
 
-      // Setting positionType to viewport makes sure that this component
-      // does not get affected by camera's transformations.
-      _playerHealth.positionType = PositionType.viewport;
-
       // Add the blue bar indicating health.
       final healthBar = HealthBar(
         player: _player,
@@ -198,7 +190,6 @@ class SpacescapeGame extends FlameGame
         _player,
         _enemyManager,
         _powerUpManager,
-        joystick,
         button,
         _playerScore,
         _playerHealth,
@@ -285,7 +276,8 @@ class SpacescapeGame extends FlameGame
 
       /// Display [GameOverMenu] when [Player.health] becomes
       /// zero and camera stops shaking.
-      if (_player.health <= 0 && (!camera.shaking)) {
+      // if (_player.health <= 0 && (!camera.shaking)) {
+      if (_player.health <= 0) {
         pauseEngine();
         overlays.remove(PauseButton.id);
         overlays.add(GameOverMenu.id);

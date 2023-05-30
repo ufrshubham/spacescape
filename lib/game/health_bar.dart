@@ -15,9 +15,7 @@ class HealthBar extends PositionComponent {
     super.anchor,
     super.children,
     super.priority,
-  }) {
-    positionType = PositionType.viewport;
-  }
+  });
 
   @override
   void render(Canvas canvas) {
