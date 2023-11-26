@@ -57,7 +57,7 @@ class SpacescapeGame extends FlameGame
   // List of commands to be processed in next update.
   final _addLaterCommandList = List<Command>.empty(growable: true);
 
-  // Indicates wheater the game world has been already initilized.
+  // Indicates weather the game world has been already initialized.
   bool _isAlreadyLoaded = false;
 
   // Returns the size of the playable area of the game window.
@@ -67,7 +67,7 @@ class SpacescapeGame extends FlameGame
   // Assets loading and adding component should be done here.
   @override
   Future<void> onLoad() async {
-    // Initilize the game world only one time.
+    // Initialize the game world only one time.
     if (!_isAlreadyLoaded) {
       // Loads and caches all the images for later use.
       await images.loadAll([

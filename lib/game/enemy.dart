@@ -24,7 +24,7 @@ class Enemy extends SpriteComponent
   // Defaults to vertically downwards.
   Vector2 moveDirection = Vector2(0, 1);
 
-  // Controls for how long enemy should be freezed.
+  // Controls for how long enemy should be frozen.
   late Timer _freezeTimer;
 
   // Holds an object of Random class to generate random numbers.
@@ -128,7 +128,7 @@ class Enemy extends SpriteComponent
     }
   }
 
-  // This method will destory this enemy.
+  // This method will destroy this enemy.
   void destroy() {
     // Ask audio player to play enemy destroy effect.
     game.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
