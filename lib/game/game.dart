@@ -295,6 +295,7 @@ class SpacescapeGame extends FlameGame
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
         if (_player.health > 0) {
           pauseEngine();
           overlays.remove(PauseButton.id);

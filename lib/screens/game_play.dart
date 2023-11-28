@@ -21,8 +21,8 @@ class GamePlay extends StatelessWidget {
       // WillPopScope provides us a way to decide if
       // this widget should be poped or not when user
       // presses the back button.
-      body: WillPopScope(
-        onWillPop: () async => false,
+      body: PopScope(
+        canPop: false,
         // GameWidget is useful to inject the underlying
         // widget of any class extending from Flame's Game class.
         child: GameWidget(
