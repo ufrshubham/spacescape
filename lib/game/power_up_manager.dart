@@ -19,7 +19,7 @@ class PowerUpManager extends Component with HasGameReference<SpacescapeGame> {
   late Timer _spawnTimer;
 
   // Controls the amount of time for which this component
-  /// should be freezed when [Freeze] power is activated.
+  /// should be frozen when [Freeze] power is activated.
   late Timer _freezeTimer;
 
   // A random number generator.
