@@ -11,7 +11,7 @@ import 'main_menu.dart';
 // Represents the spaceship selection menu from where player can
 // change current spaceship or buy a new one.
 class SelectSpaceship extends StatelessWidget {
-  const SelectSpaceship({Key? key}) : super(key: key);
+  const SelectSpaceship({super.key});
 
   @override
   Widget build(BuildContext context) {

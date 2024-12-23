@@ -8,7 +8,7 @@ class PauseButton extends StatelessWidget {
   static const String id = 'PauseButton';
   final SpacescapeGame game;
 
-  const PauseButton({Key? key, required this.game}) : super(key: key);
+  const PauseButton({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {

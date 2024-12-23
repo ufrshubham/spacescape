@@ -9,7 +9,7 @@ class PauseMenu extends StatelessWidget {
   static const String id = 'PauseMenu';
   final SpacescapeGame game;
 
-  const PauseMenu({Key? key, required this.game}) : super(key: key);
+  const PauseMenu({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {

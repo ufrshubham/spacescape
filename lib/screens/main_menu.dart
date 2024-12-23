@@ -6,7 +6,7 @@ import 'select_spaceship.dart';
 // Represents the main menu screen of Spacescape, allowing
 // players to start the game or modify in-game settings.
 class MainMenu extends StatelessWidget {
-  const MainMenu({Key? key}) : super(key: key);
+  const MainMenu({super.key});
 
   @override
   Widget build(BuildContext context) {

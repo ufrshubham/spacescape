@@ -1,5 +1,4 @@
 import 'package:flame/components.dart';
-import 'package:flame/experimental.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:provider/provider.dart';
 

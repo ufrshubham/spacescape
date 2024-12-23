@@ -2,13 +2,11 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 // import 'package:flame/effects.dart';
-import 'package:flame/experimental.dart';
 import 'package:flame/particles.dart';
 import 'package:flame/components.dart';
 // import 'package:flame_noise/flame_noise.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
 import '../models/player_data.dart';
 import '../models/spaceship_details.dart';
@@ -35,10 +33,9 @@ class Player extends SpriteComponent
   // Type of current spaceship.
   SpaceshipType spaceshipType;
 
-  // A reference to PlayerData so that
-  // we can modify money.
-  late PlayerData _playerData;
-  int get score => _playerData.currentScore;
+  PlayerData? _playerData;
+  int get score => _playerData!.currentScore;
+  bool get isReady => isMounted && _playerData != null;
 
   // If true, player will shoot 3 bullets at a time.
   bool _shootMultipleBullets = false;
@@ -59,11 +56,10 @@ class Player extends SpriteComponent
   Player({
     required this.joystick,
     required this.spaceshipType,
-    Sprite? sprite,
-    Vector2? position,
-    Vector2? size,
-  })  : _spaceship = Spaceship.getSpaceshipByType(spaceshipType),
-        super(sprite: sprite, position: position, size: size) {
+    super.sprite,
+    super.position,
+    super.size,
+  }) : _spaceship = Spaceship.getSpaceshipByType(spaceshipType) {
     // Sets power up timer to 4 seconds. After 4 seconds,
     // multiple bullet will get deactivated.
     _powerUpTimer = Timer(4, onTick: () {
@@ -84,8 +80,6 @@ class Player extends SpriteComponent
       anchor: Anchor.center,
     );
     add(shape);
-
-    _playerData = Provider.of<PlayerData>(game.buildContext!, listen: false);
   }
 
   @override
@@ -120,15 +114,15 @@ class Player extends SpriteComponent
   };
 
   @override
-  bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     // Set this to zero first - if the user releases all keys pressed, then
     // the set will be empty and our vector non-zero.
     keyboardDelta.setZero();
 
     if (!_keysWatched.contains(event.logicalKey)) return true;
 
-    if (event is RawKeyDownEvent &&
-        !event.repeat &&
+    if (event is KeyDownEvent &&
+        event is! KeyRepeatEvent &&
         event.logicalKey == LogicalKeyboardKey.space) {
       // pew pew!
       joystickAction();
@@ -196,6 +190,12 @@ class Player extends SpriteComponent
     game.world.add(particleComponent);
   }
 
+  void setPlayerData(PlayerData playerData) {
+    _playerData = playerData;
+    // Update the current spaceship type of player.
+    _setSpaceshipType(playerData.spaceshipType);
+  }
+
   void joystickAction() {
     Bullet bullet = Bullet(
       sprite: game.spriteSheet.getSpriteById(28),
@@ -235,11 +235,11 @@ class Player extends SpriteComponent
   // Adds given points to player score
   /// and also add it to [PlayerData.money].
   void addToScore(int points) {
-    _playerData.currentScore += points;
-    _playerData.money += points;
+    _playerData!.currentScore += points;
+    _playerData!.money += points;
 
     // Saves player data to disk.
-    _playerData.save();
+    _playerData!.save();
   }
 
   // Increases health by give amount.
@@ -254,7 +254,7 @@ class Player extends SpriteComponent
   // Resets player score, health and position. Should be called
   // while restarting and exiting the game.
   void reset() {
-    _playerData.currentScore = 0;
+    _playerData!.currentScore = 0;
     _health = 100;
     position = game.fixedResolution / 2;
   }
@@ -262,7 +262,7 @@ class Player extends SpriteComponent
   // Changes the current spaceship type with given spaceship type.
   // This method also takes care of updating the internal spaceship details
   // as well as the spaceship sprite.
-  void setSpaceshipType(SpaceshipType spaceshipType) {
+  void _setSpaceshipType(SpaceshipType spaceshipType) {
     spaceshipType = spaceshipType;
     _spaceship = Spaceship.getSpaceshipByType(spaceshipType);
     sprite = game.spriteSheet.getSpriteById(_spaceship.spriteId);

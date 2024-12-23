@@ -26,11 +26,6 @@ import 'audio_player_component.dart';
 // This class is responsible for initializing and running the game-loop.
 class SpacescapeGame extends FlameGame
     with HasCollisionDetection, HasKeyboardHandlerComponents {
-  // The whole game world.
-  final World world = World();
-
-  late CameraComponent primaryCamera;
-
   // Stores a reference to player component.
   late Player _player;
 
@@ -93,18 +88,17 @@ class SpacescapeGame extends FlameGame
         // size: 100,
         background: CircleComponent(
           radius: 60,
-          paint: Paint()..color = Colors.white.withOpacity(0.5),
+          paint: Paint()..color = Colors.white.withValues(alpha: 0.5),
         ),
         knob: CircleComponent(radius: 30),
       );
 
-      primaryCamera = CameraComponent.withFixedResolution(
+      camera = CameraComponent.withFixedResolution(
         world: world,
         width: fixedResolution.x,
         height: fixedResolution.y,
-        hudComponents: [joystick],
-      )..viewfinder.position = fixedResolution / 2;
-      await add(primaryCamera);
+      );
+      camera.viewfinder.position = fixedResolution / 2;
 
       _audioPlayerComponent = AudioPlayerComponent();
       final stars = await ParallaxComponent.load(
@@ -139,7 +133,7 @@ class SpacescapeGame extends FlameGame
       final button = ButtonComponent(
         button: CircleComponent(
           radius: 60,
-          paint: Paint()..color = Colors.white.withOpacity(0.5),
+          paint: Paint()..color = Colors.white.withValues(alpha: 0.5),
         ),
         anchor: Anchor.bottomRight,
         position: Vector2(fixedResolution.x - 30, fixedResolution.y - 30),
@@ -186,14 +180,18 @@ class SpacescapeGame extends FlameGame
       // Makes the game use a fixed resolution irrespective of the windows size.
       await world.addAll([
         _audioPlayerComponent,
-        stars,
         _player,
         _enemyManager,
         _powerUpManager,
+      ]);
+
+      camera.backdrop.add(stars);
+      camera.viewport.addAll([
+        joystick,
         button,
+        healthBar,
         _playerScore,
         _playerHealth,
-        healthBar,
       ]);
 
       // Set this to true so that we do not initilize
@@ -209,8 +207,7 @@ class SpacescapeGame extends FlameGame
     if (buildContext != null) {
       // Get the PlayerData from current build context without registering a listener.
       final playerData = Provider.of<PlayerData>(buildContext!, listen: false);
-      // Update the current spaceship type of player.
-      _player.setSpaceshipType(playerData.spaceshipType);
+      _player.setPlayerData(playerData);
     }
     _audioPlayerComponent.playBgm('9. Space Invaders.wav');
     super.onAttach();
@@ -269,7 +266,7 @@ class SpacescapeGame extends FlameGame
     _commandList.addAll(_addLaterCommandList);
     _addLaterCommandList.clear();
 
-    if (_player.isMounted) {
+    if (isAttached && _player.isReady) {
       // Update score and health components with latest values.
       _playerScore.text = 'Score: ${_player.score}';
       _playerHealth.text = 'Health: ${_player.health}%';

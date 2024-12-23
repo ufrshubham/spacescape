@@ -4,7 +4,7 @@ import 'package:spacescape/models/settings.dart';
 
 // This class represents the settings menu.
 class SettingsMenu extends StatelessWidget {
-  const SettingsMenu({Key? key}) : super(key: key);
+  const SettingsMenu({super.key});
 
   @override
   Widget build(BuildContext context) {

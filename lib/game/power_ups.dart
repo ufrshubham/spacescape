@@ -1,6 +1,5 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/experimental.dart';
 
 import 'game.dart';
 import 'enemy.dart';
@@ -27,10 +26,10 @@ abstract class PowerUp extends SpriteComponent
   void onActivated();
 
   PowerUp({
-    Vector2? position,
-    Vector2? size,
-    Sprite? sprite,
-  }) : super(position: position, size: size, sprite: sprite) {
+    super.position,
+    super.size,
+    super.sprite,
+  }) {
     // Power ups will be displayed only for 3 seconds
     // before getting destroyed.
     _timer = Timer(3, onTick: removeFromParent);
@@ -80,8 +79,7 @@ abstract class PowerUp extends SpriteComponent
 
 // This power up nukes all the enemies.
 class Nuke extends PowerUp {
-  Nuke({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  Nuke({super.position, super.size});
 
   @override
   Sprite getSprite() {
@@ -100,8 +98,7 @@ class Nuke extends PowerUp {
 
 // This power up increases player health by 10.
 class Health extends PowerUp {
-  Health({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  Health({super.position, super.size});
 
   @override
   Sprite getSprite() {
@@ -120,8 +117,7 @@ class Health extends PowerUp {
 
 // This power up freezes all enemies for some time.
 class Freeze extends PowerUp {
-  Freeze({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  Freeze({super.position, super.size});
 
   @override
   Sprite getSprite() {
@@ -152,8 +148,7 @@ class Freeze extends PowerUp {
 
 // This power up activate multi-fire for some time.
 class MultiFire extends PowerUp {
-  MultiFire({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  MultiFire({super.position, super.size});
 
   @override
   Sprite getSprite() {
