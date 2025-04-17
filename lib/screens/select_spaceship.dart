@@ -33,7 +33,7 @@ class SelectSpaceship extends StatelessWidget {
                       blurRadius: 20.0,
                       color: Colors.white,
                       offset: Offset(0, 0),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -42,8 +42,9 @@ class SelectSpaceship extends StatelessWidget {
             // Displays current spaceship's name and amount of money left.
             Consumer<PlayerData>(
               builder: (context, playerData, child) {
-                final spaceship =
-                    Spaceship.getSpaceshipByType(playerData.spaceshipType);
+                final spaceship = Spaceship.getSpaceshipByType(
+                  playerData.spaceshipType,
+                );
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -79,42 +80,43 @@ class SelectSpaceship extends StatelessWidget {
                           final canBuy = playerData.canBuy(type);
 
                           return ElevatedButton(
-                            onPressed: isEquipped
-                                ? null
-                                : () {
-                                    if (isOwned) {
-                                      playerData.equip(type);
-                                    } else {
-                                      if (canBuy) {
-                                        playerData.buy(type);
+                            onPressed:
+                                isEquipped
+                                    ? null
+                                    : () {
+                                      if (isOwned) {
+                                        playerData.equip(type);
                                       } else {
-                                        // Displays an alert if player
-                                        // does not have enough money.
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              backgroundColor: Colors.red,
-                                              title: const Text(
-                                                'Insufficient Balance',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              content: Text(
-                                                'Need ${spaceship.cost - playerData.money} more',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            );
-                                          },
-                                        );
+                                        if (canBuy) {
+                                          playerData.buy(type);
+                                        } else {
+                                          // Displays an alert if player
+                                          // does not have enough money.
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                backgroundColor: Colors.red,
+                                                title: const Text(
+                                                  'Insufficient Balance',
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                content: Text(
+                                                  'Need ${spaceship.cost - playerData.money} more',
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        }
                                       }
-                                    }
-                                  },
+                                    },
                             child: Text(
                               isEquipped
                                   ? 'Equipped'
                                   : isOwned
-                                      ? 'Select'
-                                      : 'Buy',
+                                  ? 'Select'
+                                  : 'Buy',
                             ),
                           );
                         },
@@ -133,9 +135,7 @@ class SelectSpaceship extends StatelessWidget {
                   // Push and replace current screen (i.e MainMenu) with
                   // GamePlay, because back press will be blocked by GamePlay.
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const GamePlay(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const GamePlay()),
                   );
                 },
                 child: const Text('Start'),
@@ -148,9 +148,7 @@ class SelectSpaceship extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const MainMenu(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const MainMenu()),
                   );
                 },
                 child: const Icon(Icons.arrow_back),

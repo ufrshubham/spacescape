@@ -25,11 +25,7 @@ abstract class PowerUp extends SpriteComponent
   // and perform any activation event necessary.
   void onActivated();
 
-  PowerUp({
-    super.position,
-    super.size,
-    super.sprite,
-  }) {
+  PowerUp({super.position, super.size, super.sprite}) {
     // Power ups will be displayed only for 3 seconds
     // before getting destroyed.
     _timer = Timer(3, onTick: removeFromParent);
@@ -66,9 +62,13 @@ abstract class PowerUp extends SpriteComponent
     // onActivated method and mark this component to be removed.
     if (other is Player) {
       // Ask audio player to play power up activation effect.
-      game.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-        audioPlayer.playSfx('powerUp6.ogg');
-      }));
+      game.addCommand(
+        Command<AudioPlayerComponent>(
+          action: (audioPlayer) {
+            audioPlayer.playSfx('powerUp6.ogg');
+          },
+        ),
+      );
       onActivated();
       removeFromParent();
     }
@@ -89,9 +89,11 @@ class Nuke extends PowerUp {
   @override
   void onActivated() {
     // Register a command to destory all enemies.
-    final command = Command<Enemy>(action: (enemy) {
-      enemy.destroy();
-    });
+    final command = Command<Enemy>(
+      action: (enemy) {
+        enemy.destroy();
+      },
+    );
     game.addCommand(command);
   }
 }
@@ -108,9 +110,11 @@ class Health extends PowerUp {
   @override
   void onActivated() {
     // Register a command to increase player health.
-    final command = Command<Player>(action: (player) {
-      player.increaseHealthBy(10);
-    });
+    final command = Command<Player>(
+      action: (player) {
+        player.increaseHealthBy(10);
+      },
+    );
     game.addCommand(command);
   }
 }
@@ -127,21 +131,27 @@ class Freeze extends PowerUp {
   @override
   void onActivated() {
     // Register a command to freeze all enemies.
-    final command1 = Command<Enemy>(action: (enemy) {
-      enemy.freeze();
-    });
+    final command1 = Command<Enemy>(
+      action: (enemy) {
+        enemy.freeze();
+      },
+    );
     game.addCommand(command1);
 
     /// Register a command to freeze [EnemyManager].
-    final command2 = Command<EnemyManager>(action: (enemyManager) {
-      enemyManager.freeze();
-    });
+    final command2 = Command<EnemyManager>(
+      action: (enemyManager) {
+        enemyManager.freeze();
+      },
+    );
     game.addCommand(command2);
 
     /// Register a command to freeze [PowerUpManager].
-    final command3 = Command<PowerUpManager>(action: (powerUpManager) {
-      powerUpManager.freeze();
-    });
+    final command3 = Command<PowerUpManager>(
+      action: (powerUpManager) {
+        powerUpManager.freeze();
+      },
+    );
     game.addCommand(command3);
   }
 }
@@ -158,9 +168,11 @@ class MultiFire extends PowerUp {
   @override
   void onActivated() {
     // Register a command to allow multiple bullets.
-    final command = Command<Player>(action: (player) {
-      player.shootMultipleBullets();
-    });
+    final command = Command<Player>(
+      action: (player) {
+        player.shootMultipleBullets();
+      },
+    );
     game.addCommand(command);
   }
 }

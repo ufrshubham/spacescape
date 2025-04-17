@@ -62,9 +62,12 @@ class Player extends SpriteComponent
   }) : _spaceship = Spaceship.getSpaceshipByType(spaceshipType) {
     // Sets power up timer to 4 seconds. After 4 seconds,
     // multiple bullet will get deactivated.
-    _powerUpTimer = Timer(4, onTick: () {
-      _shootMultipleBullets = false;
-    });
+    _powerUpTimer = Timer(
+      4,
+      onTick: () {
+        _shootMultipleBullets = false;
+      },
+    );
   }
 
   @override
@@ -165,25 +168,23 @@ class Player extends SpriteComponent
     }
 
     // Clamp position of player such that the player sprite does not go outside the screen size.
-    position.clamp(
-      Vector2.zero() + size / 2,
-      game.fixedResolution - size / 2,
-    );
+    position.clamp(Vector2.zero() + size / 2, game.fixedResolution - size / 2);
 
     // Adds thruster particles.
     final particleComponent = ParticleSystemComponent(
       particle: Particle.generate(
         count: 10,
         lifespan: 0.1,
-        generator: (i) => AcceleratedParticle(
-          acceleration: getRandomVector(),
-          speed: getRandomVector(),
-          position: (position.clone() + Vector2(0, size.y / 3)),
-          child: CircleParticle(
-            radius: 1,
-            paint: Paint()..color = Colors.white,
-          ),
-        ),
+        generator:
+            (i) => AcceleratedParticle(
+              acceleration: getRandomVector(),
+              speed: getRandomVector(),
+              position: (position.clone() + Vector2(0, size.y / 3)),
+              child: CircleParticle(
+                radius: 1,
+                paint: Paint()..color = Colors.white,
+              ),
+            ),
       ),
     );
 
@@ -209,9 +210,13 @@ class Player extends SpriteComponent
     game.world.add(bullet);
 
     // Ask audio player to play bullet fire effect.
-    game.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laserSmall_001.ogg');
-    }));
+    game.addCommand(
+      Command<AudioPlayerComponent>(
+        action: (audioPlayer) {
+          audioPlayer.playSfx('laserSmall_001.ogg');
+        },
+      ),
+    );
 
     // If multiple bullet is on, add two more
     // bullets rotated +-PI/6 radians to first bullet.

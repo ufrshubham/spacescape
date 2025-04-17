@@ -26,9 +26,7 @@ class Settings extends ChangeNotifier with HiveObjectMixin {
     save();
   }
 
-  Settings({
-    bool soundEffects = false,
-    bool backgroundMusic = false,
-  })  : _bgm = backgroundMusic,
-        _sfx = soundEffects;
+  Settings({bool soundEffects = false, bool backgroundMusic = false})
+    : _bgm = backgroundMusic,
+      _sfx = soundEffects;
 }

@@ -77,9 +77,12 @@ class Enemy extends SpriteComponent
     _hpText.text = '$_hitPoints HP';
 
     // Sets freeze time to 2 seconds. After 2 seconds speed will be reset.
-    _freezeTimer = Timer(2, onTick: () {
-      _speed = enemyData.speed;
-    });
+    _freezeTimer = Timer(
+      2,
+      onTick: () {
+        _speed = enemyData.speed;
+      },
+    );
 
     // If this enemy can move horizontally, randomize the move direction.
     if (enemyData.hMove) {
@@ -130,18 +133,24 @@ class Enemy extends SpriteComponent
   // This method will destroy this enemy.
   void destroy() {
     // Ask audio player to play enemy destroy effect.
-    game.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laser1.ogg');
-    }));
+    game.addCommand(
+      Command<AudioPlayerComponent>(
+        action: (audioPlayer) {
+          audioPlayer.playSfx('laser1.ogg');
+        },
+      ),
+    );
 
     removeFromParent();
 
     // Before dying, register a command to increase
     // player's score by 1.
-    final command = Command<Player>(action: (player) {
-      // Use the correct killPoint to increase player's score.
-      player.addToScore(enemyData.killPoint);
-    });
+    final command = Command<Player>(
+      action: (player) {
+        // Use the correct killPoint to increase player's score.
+        player.addToScore(enemyData.killPoint);
+      },
+    );
     game.addCommand(command);
 
     // Generate 20 white circle particles with random speed and acceleration,
@@ -151,15 +160,16 @@ class Enemy extends SpriteComponent
       particle: Particle.generate(
         count: 20,
         lifespan: 0.1,
-        generator: (i) => AcceleratedParticle(
-          acceleration: getRandomVector(),
-          speed: getRandomVector(),
-          position: position.clone(),
-          child: CircleParticle(
-            radius: 2,
-            paint: Paint()..color = Colors.white,
-          ),
-        ),
+        generator:
+            (i) => AcceleratedParticle(
+              acceleration: getRandomVector(),
+              speed: getRandomVector(),
+              position: position.clone(),
+              child: CircleParticle(
+                radius: 2,
+                paint: Paint()..color = Colors.white,
+              ),
+            ),
       ),
     );
 

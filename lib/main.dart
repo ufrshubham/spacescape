@@ -103,8 +103,10 @@ Future<Settings> getSettings() async {
   // of the game. In such case, we first store the default
   // settings in the settings box and then return the same.
   if (settings == null) {
-    box.put(Settings.settingsKey,
-        Settings(soundEffects: true, backgroundMusic: true));
+    box.put(
+      Settings.settingsKey,
+      Settings(soundEffects: true, backgroundMusic: true),
+    );
   }
 
   return box.get(Settings.settingsKey)!;

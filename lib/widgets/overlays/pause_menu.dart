@@ -30,7 +30,7 @@ class PauseMenu extends StatelessWidget {
                     blurRadius: 20.0,
                     color: Colors.white,
                     offset: Offset(0, 0),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -73,9 +73,7 @@ class PauseMenu extends StatelessWidget {
                 game.resumeEngine();
 
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const MainMenu(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const MainMenu()),
                 );
               },
               child: const Text('Exit'),

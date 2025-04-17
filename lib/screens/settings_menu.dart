@@ -26,7 +26,7 @@ class SettingsMenu extends StatelessWidget {
                       blurRadius: 20.0,
                       color: Colors.white,
                       offset: Offset(0, 0),
-                    )
+                    ),
                   ],
                 ),
               ),

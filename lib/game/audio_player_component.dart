@@ -12,18 +12,21 @@ class AudioPlayerComponent extends Component
   Future<void>? onLoad() async {
     FlameAudio.bgm.initialize();
 
-    await FlameAudio.audioCache
-        .loadAll(['laser1.ogg', 'powerUp6.ogg', 'laserSmall_001.ogg']);
+    await FlameAudio.audioCache.loadAll([
+      'laser1.ogg',
+      'powerUp6.ogg',
+      'laserSmall_001.ogg',
+    ]);
 
     try {
-      await FlameAudio.audioCache.load(
-        '9. Space Invaders.wav',
-      );
+      await FlameAudio.audioCache.load('9. Space Invaders.wav');
     } catch (_) {
       // ignore: avoid_print
-      print('Missing VOiD1 Gaming music pack: '
-          'https://void1gaming.itch.io/free-synthwave-music-pack '
-          'See assets/audio/README.md for more information.');
+      print(
+        'Missing VOiD1 Gaming music pack: '
+        'https://void1gaming.itch.io/free-synthwave-music-pack '
+        'See assets/audio/README.md for more information.',
+      );
     }
 
     return super.onLoad();
@@ -33,8 +36,10 @@ class AudioPlayerComponent extends Component
     if (!FlameAudio.audioCache.loadedFiles.containsKey(filename)) return;
 
     if (game.buildContext != null) {
-      if (Provider.of<Settings>(game.buildContext!, listen: false)
-          .backgroundMusic) {
+      if (Provider.of<Settings>(
+        game.buildContext!,
+        listen: false,
+      ).backgroundMusic) {
         FlameAudio.bgm.play(filename);
       }
     }
@@ -42,8 +47,10 @@ class AudioPlayerComponent extends Component
 
   void playSfx(String filename) {
     if (game.buildContext != null) {
-      if (Provider.of<Settings>(game.buildContext!, listen: false)
-          .soundEffects) {
+      if (Provider.of<Settings>(
+        game.buildContext!,
+        listen: false,
+      ).soundEffects) {
         FlameAudio.play(filename);
       }
     }

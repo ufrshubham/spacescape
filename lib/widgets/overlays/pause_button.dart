@@ -15,10 +15,7 @@ class PauseButton extends StatelessWidget {
     return Align(
       alignment: Alignment.topCenter,
       child: TextButton(
-        child: const Icon(
-          Icons.pause_rounded,
-          color: Colors.white,
-        ),
+        child: const Icon(Icons.pause_rounded, color: Colors.white),
         onPressed: () {
           game.pauseEngine();
           game.overlays.add(PauseMenu.id);
