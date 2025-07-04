@@ -57,14 +57,13 @@ class PlayerData extends ChangeNotifier with HiveObjectMixin {
 
   /// Creates a new instance of [PlayerData] from given map.
   PlayerData.fromMap(Map<String, dynamic> map)
-    : spaceshipType = map['currentSpaceshipType'],
-      ownedSpaceships =
-          map['ownedSpaceshipTypes']
-              .map((e) => e as SpaceshipType) // Map out each element.
-              .cast<SpaceshipType>() // Cast each element to SpaceshipType.
-              .toList(), // Convert to a List<SpaceshipType>.
-      _highScore = map['highScore'],
-      money = map['money'];
+      : spaceshipType = map['currentSpaceshipType'],
+        ownedSpaceships = map['ownedSpaceshipTypes']
+            .map((e) => e as SpaceshipType) // Map out each element.
+            .cast<SpaceshipType>() // Cast each element to SpaceshipType.
+            .toList(), // Convert to a List<SpaceshipType>.
+        _highScore = map['highScore'],
+        money = map['money'];
 
   // A default map which should be used for creating the
   // very first PlayerData instance when game is launched

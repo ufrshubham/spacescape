@@ -57,11 +57,10 @@ class EnemyManager extends Component with HasGameReference<SpacescapeGame> {
     if (game.buildContext != null) {
       // Get current score and figure out the max level of enemy that
       // can be spawned for this score.
-      int currentScore =
-          Provider.of<PlayerData>(
-            game.buildContext!,
-            listen: false,
-          ).currentScore;
+      int currentScore = Provider.of<PlayerData>(
+        game.buildContext!,
+        listen: false,
+      ).currentScore;
       int maxLevel = mapScoreToMaxEnemyLevel(currentScore);
 
       /// Gets a random [EnemyData] object from the list.

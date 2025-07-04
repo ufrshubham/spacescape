@@ -5,8 +5,8 @@ import 'package:flame/components.dart';
 import 'game.dart';
 import 'power_ups.dart';
 
-typedef PowerUpMap =
-    Map<PowerUpTypes, PowerUp Function(Vector2 position, Vector2 size)>;
+typedef PowerUpMap
+    = Map<PowerUpTypes, PowerUp Function(Vector2 position, Vector2 size)>;
 
 // Represents the types of power up we have to offer.
 enum PowerUpTypes { health, freeze, nuke, multiFire }
@@ -33,13 +33,13 @@ class PowerUpManager extends Component with HasGameReference<SpacescapeGame> {
 
   // A private static map which stores a generator function for each power up.
   static final PowerUpMap _powerUpMap = {
-    PowerUpTypes.health:
-        (position, size) => Health(position: position, size: size),
-    PowerUpTypes.freeze:
-        (position, size) => Freeze(position: position, size: size),
+    PowerUpTypes.health: (position, size) =>
+        Health(position: position, size: size),
+    PowerUpTypes.freeze: (position, size) =>
+        Freeze(position: position, size: size),
     PowerUpTypes.nuke: (position, size) => Nuke(position: position, size: size),
-    PowerUpTypes.multiFire:
-        (position, size) => MultiFire(position: position, size: size),
+    PowerUpTypes.multiFire: (position, size) =>
+        MultiFire(position: position, size: size),
   };
 
   PowerUpManager() : super() {

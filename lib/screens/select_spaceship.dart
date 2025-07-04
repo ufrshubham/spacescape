@@ -80,43 +80,42 @@ class SelectSpaceship extends StatelessWidget {
                           final canBuy = playerData.canBuy(type);
 
                           return ElevatedButton(
-                            onPressed:
-                                isEquipped
-                                    ? null
-                                    : () {
-                                      if (isOwned) {
-                                        playerData.equip(type);
+                            onPressed: isEquipped
+                                ? null
+                                : () {
+                                    if (isOwned) {
+                                      playerData.equip(type);
+                                    } else {
+                                      if (canBuy) {
+                                        playerData.buy(type);
                                       } else {
-                                        if (canBuy) {
-                                          playerData.buy(type);
-                                        } else {
-                                          // Displays an alert if player
-                                          // does not have enough money.
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                backgroundColor: Colors.red,
-                                                title: const Text(
-                                                  'Insufficient Balance',
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                content: Text(
-                                                  'Need ${spaceship.cost - playerData.money} more',
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        }
+                                        // Displays an alert if player
+                                        // does not have enough money.
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              backgroundColor: Colors.red,
+                                              title: const Text(
+                                                'Insufficient Balance',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              content: Text(
+                                                'Need ${spaceship.cost - playerData.money} more',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            );
+                                          },
+                                        );
                                       }
-                                    },
+                                    }
+                                  },
                             child: Text(
                               isEquipped
                                   ? 'Equipped'
                                   : isOwned
-                                  ? 'Select'
-                                  : 'Buy',
+                                      ? 'Select'
+                                      : 'Buy',
                             ),
                           );
                         },

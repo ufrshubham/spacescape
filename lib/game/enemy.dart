@@ -160,16 +160,15 @@ class Enemy extends SpriteComponent
       particle: Particle.generate(
         count: 20,
         lifespan: 0.1,
-        generator:
-            (i) => AcceleratedParticle(
-              acceleration: getRandomVector(),
-              speed: getRandomVector(),
-              position: position.clone(),
-              child: CircleParticle(
-                radius: 2,
-                paint: Paint()..color = Colors.white,
-              ),
-            ),
+        generator: (i) => AcceleratedParticle(
+          acceleration: getRandomVector(),
+          speed: getRandomVector(),
+          position: position.clone(),
+          child: CircleParticle(
+            radius: 2,
+            paint: Paint()..color = Colors.white,
+          ),
+        ),
       ),
     );
 
